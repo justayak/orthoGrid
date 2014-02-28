@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OrthoGrid</title>
+</head>
+<script src="libs/smila_minified.js"></script>
+<script src="orthoGrid.js"></script>
+<body>
+<div>ORTHO_GRID</div>
+
+<div style="width:800px;height:600px;" id="smila">
+
+</div>
+</body>
+
+<script>
+
+    window.onload = function(){
+
+        Smila.Settings({
+            verbose:true
+        });
+
+        Smila.Renderer.start();
+
+        var dataStore = Smila.DataStore;
+        var renderer = Smila.Renderer;
+
+        dataStore.putMap({
+            src:"res/test_map_01.json",
+            key:"map01",
+            imgFolder:"res/"
+        }, function(){
+            var map = dataStore.getMap("map01");
+            renderer.setMap(map);
+
+
+        });
+
+
+
+    };
+
+
+</script>
+
+</html>
