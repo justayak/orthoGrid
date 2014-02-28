@@ -308,6 +308,32 @@
                         }
                         break;
                     case Directions.ne:
+                        for(var nx = x; nx < X; nx++ ){
+                            if(!this.validatePosition(nx,y)){
+                                canmove = false;
+                                break;
+                            }
+                        }
+                        if(canmove){
+                            for (var ny = y+ 1; ny < Y; ny++){
+                                if(!this.validatePosition(x,ny)){
+                                    canmove = false;
+                                    break;
+                                }
+                            }
+                            if(canmove){
+                                for(var nx = x; nx < X; nx++){
+                                    setValueToMatrix(userData,nx,ly,w,this.id);
+                                    setValueToMatrix(userData,nx,this.y,w,0);
+                                    handleEvent(data,nx,ly,w,trapLookup,this);
+                                }
+
+
+                                this.x = x;
+                                this.y = y;
+                            }
+                        }
+
 
                         break;
                     case Directions.nw:
