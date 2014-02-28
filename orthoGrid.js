@@ -139,6 +139,11 @@
         return false;
     };
 
+    GridEntity.prototype.validatePosition = function(x,y){
+        if (getValueFromMatrix(this.grid.userData,x,y, this.grid.w) !== 0) return false;
+        return this.validateEventId(getValueFromMatrix(this.grid.data,x,y,this.grid.w));
+    };
+
     var Directions = OG.Directions = {
         n:0,
         s:1,
@@ -229,13 +234,25 @@
                 }
             } else {
                 // BIG ELEMENT
-                var Y = y + this.h - 1;
-                var X = x + this.w - 1;
+                var Y = y + this.h;
+                var X = x + this.w;
                 switch (dir) {
                     case Directions.n:
-                        for(var nx = x;x < X; x++){
-
+                        var canmove = true;
+                        for(var nx = x;nx < X; nx++){
+                            if(!this.validatePosition(nx,y)){
+                                canmove = false;
+                                break;
+                            }
                         }
+                        if (canmove){
+                            var ly = y + this.h;
+                            for(var nx = x;nx < X; nx++){
+                                setValueToMatrix(userData,nx,y,w,this.id);
+                                setValueToMatrix(userData,nx,ly,w,0);
+                            }
+                        }
+
                         break;
                     case Directions.s:
 
@@ -263,6 +280,7 @@
 
             }
         }
+        return this;
     };
 
     GridEntity.prototype.forcePosition = function (x, y) {

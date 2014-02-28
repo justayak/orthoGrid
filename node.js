@@ -18,6 +18,8 @@ var b = Grid.spawnEntity({
 
 var dir = OG.Directions;
 
-b.move(dir.n);
+b.move(dir.s).move(dir.e).move(dir.e).move(dir.s);
+
+a.move(dir.n);
 
 Grid.print();
