@@ -315,29 +315,61 @@
                             }
                         }
                         if(canmove){
+                            var rx = this.x + this.w;
                             for (var ny = y+ 1; ny < Y; ny++){
-                                if(!this.validatePosition(x,ny)){
+                                if(!this.validatePosition(rx,ny)){
                                     canmove = false;
                                     break;
                                 }
                             }
                             if(canmove){
                                 for(var nx = x; nx < X; nx++){
-                                    setValueToMatrix(userData,nx,ly,w,this.id);
-                                    setValueToMatrix(userData,nx,this.y,w,0);
-                                    handleEvent(data,nx,ly,w,trapLookup,this);
+                                    setValueToMatrix(userData,nx,y,w,this.id);
+                                    setValueToMatrix(userData,nx+1,this.y,w,0);
+                                    handleEvent(data,nx,y,w,trapLookup,this);
                                 }
-
-
+                                for (var ny = y + 1; ny < Y; ny++){
+                                    setValueToMatrix(userData,rx,ny,w,this.id);
+                                    setValueToMatrix(userData,this.x,ny+1,w,0);
+                                    handleEvent(data,rx,ny,w,trapLookup,this);
+                                }
                                 this.x = x;
                                 this.y = y;
                             }
                         }
-
-
                         break;
                     case Directions.nw:
 
+                        for(var nx = x; nx < X; nx++){
+                            if(!this.validatePosition(nx,y)){
+                                canmove = false;
+                                break;
+                            }
+                        }
+                        if(canmove){
+                            for(var ny = y+ 1; ny < Y; ny++){
+                                if(!this.validatePosition(x,ny)){
+                                    canmove = false;
+                                    break;
+                                }
+                            }
+                            if (canmove){
+                                var ly = y + this.h;
+                                var rx = x + this.w;
+                                for(var nx = x; nx < X; nx++){
+                                    setValueToMatrix(userData,nx,y,w,this.id);
+                                    setValueToMatrix(userData,nx-1,ly,w,0);
+                                    handleEvent(data,nx,y,w,trapLookup,this);
+                                }
+                                for(var ny = y+1; ny < Y; ny++){
+                                    setValueToMatrix(userData,x,ny,w,this.id);
+                                    setValueToMatrix(userData,rx,ny+1,w,0);
+                                    handleEvent(data,x,ny,w,trapLookup,this);
+                                }
+                                this.x = x;
+                                this.y = y;
+                            }
+                        }
                         break;
                     case Directions.se:
 

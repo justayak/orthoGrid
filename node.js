@@ -20,6 +20,6 @@ var dir = OG.Directions;
 
 b.move(dir.s).move(dir.e).move(dir.e).move(dir.s);
 
-a.move(dir.s).move(dir.n).move(dir.s).move(dir.s).move(dir.w).move(dir.e);
+a.move(dir.ne);
 
 Grid.print();
