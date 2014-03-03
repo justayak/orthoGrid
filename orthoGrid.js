@@ -7,8 +7,8 @@
 
     OG.VERBOSE = false;
 
-    var log = function(str){
-        if(OG.VERBOSE) console.log(str);
+    var log = function (str) {
+        if (OG.VERBOSE) console.log(str);
     };
 
     var INT_BYTE_SIZE = 2;
@@ -61,19 +61,19 @@
      * @param map {Smila.Map}
      * @param callback {function}
      */
-    Grid.createFromSmilaMap = function(map,callback){
-        log("[OG::Grid->createFromSmilaMap] beginning.. " );
-        map.onReady(function(){
-            var result = new Grid(map.w,map.h);
-            if (typeof map.eventLayer !== 'undefined'){
-                for(var x = 0; x < map.w; x++){
-                    for(var y = 0; y < map.h; y++){
+    Grid.createFromSmilaMap = function (map, callback) {
+        log("[OG::Grid->createFromSmilaMap] beginning.. ");
+        map.onReady(function () {
+            var result = new Grid(map.w, map.h);
+            if (typeof map.eventLayer !== 'undefined') {
+                for (var x = 0; x < map.w; x++) {
+                    for (var y = 0; y < map.h; y++) {
                         var event = map.eventLayer[x][y];
-                        if (event !== 0){
-                            if (event.id !== 1){
-                                result.trapLookup[x+"_"+y] = event;
+                        if (event !== 0) {
+                            if (event.id !== 1) {
+                                result.trapLookup[x + "_" + y] = event;
                             }
-                            setValueToMatrix(result.data,x,y,map.w,event.id);
+                            setValueToMatrix(result.data, x, y, map.w, event.id);
                         }
                     }
                 }
@@ -114,18 +114,21 @@
      * @param h {Integer} height
      * @return {Array} of Grid-Entities inside the square
      */
-    Grid.prototype.query = function(x,y,w,h){
+    Grid.prototype.query = function (x, y, w, h) {
         var alreadyFoundLookup = {};
         var w = this.w;
-        var data = this.data;
+        var data = this.userData;
         var result = [];
-        var X = x + w;
-        var y = y + h;
-        for(;x < X; x++){
-            for(;y<Y;y++){
-                var entity = getValueFromMatrix(data,x,y,w);
-                if (entity !== 0){
-
+        var X = Math.min(x + w, this.w);
+        var Y = Math.min(y + h, this.h);
+        for (; x < X; x++) {
+            for (var ny = y; ny < Y; ny++) {
+                var entity = getValueFromMatrix(data, x, ny, w);
+                if (entity !== 0) {
+                    if (!(entity in alreadyFoundLookup)) {
+                        alreadyFoundLookup[entity] = true;
+                        result.push(this.entities[entity]);
+                    }
                 }
             }
         }
@@ -139,11 +142,11 @@
      * @param r {Integer} radius
      * @return {Array} of Grid-Entities inside the square
      */
-    Grid.prototype.queryCircle = function(x,y,r){
-        var result = [];
+    /*Grid.prototype.queryCircle = function(x,y,r){
+     var result = [];
 
-        return result;
-    }
+     return result;
+     }*/
 
     Grid.prototype.print = function (toConsole) {
         var str = "\nEntities:\n";
@@ -213,13 +216,13 @@
         // set events
         var X = this.x + this.w;
         var Y = this.y + this.h;
-        for(var x = this.x; x < X; x++){
-            for(var y = this.y; y < Y; y++){
-                var event = getValueFromMatrix(grid.data,x,y,w);
-                if (event !== 0){
+        for (var x = this.x; x < X; x++) {
+            for (var y = this.y; y < Y; y++) {
+                var event = getValueFromMatrix(grid.data, x, y, w);
+                if (event !== 0) {
                     var elem = {};
                     var key = x + "_" + y;
-                    if(key in grid.trapLookup){
+                    if (key in grid.trapLookup) {
                         elem = grid.trapLookup[key];
                     }
                     this.traps.push(elem);
@@ -509,19 +512,19 @@
                         }
                         if (canmove) {
                             for (ny = y + 1; ny < Y; ny++) {
-                                if(!this.validatePosition(x,ny-1)){
+                                if (!this.validatePosition(x, ny - 1)) {
                                     canmove = false;
                                     break;
                                 }
                             }
-                            if (canmove){
-                                for(nx = x; nx < X; nx++){
-                                    setValueToMatrix(userData,nx,ly,w,this.id);
-                                    setValueToMatrix(userData,nx+1,this.y,w,0);
+                            if (canmove) {
+                                for (nx = x; nx < X; nx++) {
+                                    setValueToMatrix(userData, nx, ly, w, this.id);
+                                    setValueToMatrix(userData, nx + 1, this.y, w, 0);
                                 }
-                                for(ny = y+1;ny < Y;ny++){
-                                    setValueToMatrix(userData,x,ny-1,w,this.id);
-                                    setValueToMatrix(userData,X,ny-1,w,0);
+                                for (ny = y + 1; ny < Y; ny++) {
+                                    setValueToMatrix(userData, x, ny - 1, w, this.id);
+                                    setValueToMatrix(userData, X, ny - 1, w, 0);
                                 }
                                 this.x = x;
                                 this.y = y;
@@ -532,13 +535,13 @@
             }
         }
 
-        for(x = this.x; x < X; x++){
-            for(y = this.y; y < Y; y++){
-                var event = getValueFromMatrix(data,x,y,w);
-                if (event !== 0){
+        for (x = this.x; x < X; x++) {
+            for (y = this.y; y < Y; y++) {
+                var event = getValueFromMatrix(data, x, y, w);
+                if (event !== 0) {
                     var elem = {};
                     var key = x + "_" + y;
-                    if(key in trapLookup){
+                    if (key in trapLookup) {
                         elem = trapLookup[key];
                     }
                     this.traps.push(elem);
