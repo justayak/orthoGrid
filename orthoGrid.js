@@ -52,6 +52,30 @@
 
     /**
      *
+     * @param map
+     * @return {*}
+     */
+    Grid.createFromSmilaMap = function(map){
+        var result = new Grid(map.w,map.h);
+        if (typeof map.eventLayer !== 'undefined'){
+            for(var x = 0; x < map.w; x++){
+                for(var y = 0; y < map.h; y++){
+                    var event = map.eventLayer[x][y];
+                    if (event !== 0){
+                        if (event.id !== 1){
+                            result.trapLookup[x+"_"+y] = event;
+                        }
+                        setValueToMatrix(result.data,x,y,map.w,event.id);
+                    }
+                }
+            }
+        }
+        return result;
+
+    };
+
+    /**
+     *
      * @param entityOptions {Option}
      *      w : {Integer} Defines, how many grids this element will consume
      *      h : {Integer} Defines, how many grids this element will consume
@@ -110,6 +134,7 @@
         this.enterableEventIds = options.enterableEventIds || [];
         this.grid = grid;
         this.eventListener = [];
+        this.traps = [];
 
         // set initial position:
         if (this.w === 1 && this.h === 1) {
@@ -168,6 +193,7 @@
      * @param dir
      */
     GridEntity.prototype.move = function (dir) {
+        this.traps.length = 0;
         var x = this.x;
         var y = this.y;
         switch (dir) {
@@ -255,7 +281,6 @@
                             for (nx = x; nx < X; nx++) {
                                 setValueToMatrix(userData, nx, y, w, this.id);
                                 setValueToMatrix(userData, nx, ly, w, 0);
-                                handleEvent(data, nx, y, w, trapLookup, this);
                             }
                             this.y = y;
                         }
@@ -272,7 +297,6 @@
                             for (nx = x; nx < X; nx++) {
                                 setValueToMatrix(userData, nx, ly, w, this.id);
                                 setValueToMatrix(userData, nx, this.y, w, 0);
-                                handleEvent(data, nx, ly, w, trapLookup, this);
                             }
                             this.y = y;
                         }
@@ -288,7 +312,6 @@
                                 for (ny = y; ny < Y; ny++) {
                                     setValueToMatrix(userData, x, ny, w, this.id);
                                     setValueToMatrix(userData, rx, ny, w, 0);
-                                    handleEvent(data, x, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                             }
@@ -306,7 +329,6 @@
                             for (ny = y; ny < Y; ny++) {
                                 setValueToMatrix(userData, rx, ny, w, this.id);
                                 setValueToMatrix(userData, this.x, ny, w, 0);
-                                handleEvent(data, rx, ny, w, trapLookup, this);
                             }
                             this.x = x;
                         }
@@ -330,12 +352,10 @@
                                 for (nx = x; nx < X; nx++) {
                                     setValueToMatrix(userData, nx, y, w, this.id);
                                     setValueToMatrix(userData, nx - 1, Y, w, 0);
-                                    handleEvent(data, nx, y, w, trapLookup, this);
                                 }
                                 for (ny = y + 1; ny < Y; ny++) {
                                     setValueToMatrix(userData, rx, ny, w, this.id);
                                     setValueToMatrix(userData, this.x, ny, w, 0);
-                                    handleEvent(data, rx, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                                 this.y = y;
@@ -362,12 +382,10 @@
                                 for (nx = x; nx < X; nx++) {
                                     setValueToMatrix(userData, nx, y, w, this.id);
                                     setValueToMatrix(userData, nx + 1, ly, w, 0);
-                                    handleEvent(data, nx, y, w, trapLookup, this);
                                 }
                                 for (ny = y + 1; ny < Y; ny++) {
                                     setValueToMatrix(userData, x, ny, w, this.id);
                                     setValueToMatrix(userData, rx, ny, w, 0);
-                                    handleEvent(data, x, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                                 this.y = y;
@@ -434,8 +452,21 @@
                         }
                         break;
                 }
+            }
+        }
 
-
+        for(x = this.x; x < X; x++){
+            for(y = this.y; y < Y; y++){
+                var event = getValueFromMatrix(data,x,y,w);
+                if (event !== 0){
+                    var elem = {};
+                    var key = x + "_" + y;
+                    if(key in trapLookup){
+                        elem = trapLookup[key];
+                    }
+                    elem.eventId = event;
+                    this.traps.push(data);
+                }
             }
         }
         return this;

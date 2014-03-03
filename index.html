@@ -27,13 +27,15 @@
         var renderer = Smila.Renderer;
 
         dataStore.putMap({
-            src:"res/test_map_01.json",
+            src:"res/test_map_02.json",
             key:"map01",
             imgFolder:"res/"
         }, function(){
             var map = dataStore.getMap("map01");
             renderer.setMap(map);
 
+
+            var grid = OG.Grid.createFromSmilaMap(map);
 
         });
 

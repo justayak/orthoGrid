@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="7" height="10" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32">
+  <image source="tileset.png" width="256" height="1152"/>
+ </tileset>
+ <tileset firstgid="289" name="events" tilewidth="32" tileheight="32">
+  <image source="events.png" width="128" height="128"/>
+ </tileset>
+ <layer name="boden" width="7" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYMSBrwHxdSi+ARXjBWI+IL4HxPeh+AFUThSIxXDIwTCxch+Q7ESXQ9dLrtwzIH6OhF8gyQEAxl8kKA==
+  </data>
+ </layer>
+ <layer name="mitte" width="7" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBh5QIEINQAFmAAh
+  </data>
+ </layer>
+ <layer name="dyn" width="7" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgcQG6gHYAGABH4AB8=
+  </data>
+ </layer>
+ <layer name="top" width="7" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYMAE7EDMgUV8JAEAEDQAEA==
+  </data>
+ </layer>
+ <layer name="events" width="7" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYMANlBlRMQgoMkIwqXL4zAQBNSz6kOWpKafCSFgfAGUqBpk=
+  </data>
+ </layer>
+ <objectgroup name="eventsD" width="7" height="10">
+  <object name="pokeball" x="192" y="128" width="32" height="32">
+   <properties>
+    <property name="lvl" value="5"/>
+    <property name="pkmn" value="1"/>
+   </properties>
+  </object>
+  <object name="Text" x="160" y="256" width="20" height="25">
+   <properties>
+    <property name="text" value="dont look at me!"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

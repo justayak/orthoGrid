@@ -1,35 +1,1575 @@
-window.Smila=function(){function t(){}function Y(a,b,c,d,e,f,p,g){var l=null;Array.isArray(a)&&(l=a[1],a=a[0]);for(var k=0;k<b.length;k++)for(var n=0;n<b[0].length;n++)for(var h=b[k][n].getContext("2d"),m=0,q=0,r=k*p;r<(k+1)*p-1;r+=d){for(var q=0,s=n*g;s<(n+1)*g-1;s+=e){var t=s/e*f+r/d;t<a.data.length&&(c.position(m,q),c.setTile(a.data[t])&&c.render(h),null!==l&&c.setTile(l.data[t])&&c.render(h));q+=e}m+=d}}var Z="",$={r:255,g:0,b:0,a:255},aa,na=Math.floor(1E3/60);t.Settings=function(a){Z=a.imagePath||
-    "";$=a.defaultOutlineColor||{r:255,g:0,b:0,a:255};aa=a.verbose||!1};var q=t.Sprite=function(a,b){this.img=a;this.frameHeight=b.h;this.frameWidth=b.w;!0==b.o&&(this.imgOutlined=m[b.key+"_outline"].canvas);this.bitmask=b.bm?m[b.key+"_bitmask"]:null;this.oy=this.ox=0;this.zIndexByYPos=!0;this.z=this.y=this.x=0;this.mouseLeave=this.mouseEnter=null;this._outline=this._mouseIsActive=!1;this.angleInRadians=0};q.prototype.onmouseenter=function(a){this._mouseIsActive=!0;this.mouseEnter=a;return this};q.prototype.onmouseleave=
-    function(a){this._mouseIsActive=!0;this.mouseLeave=a;return this};q.prototype.outline=function(a){this._outline=a;return this};q.prototype.subimage=function(a,b){this.ox=a;this.oy=b;return this};q.prototype.position=function(a,b){return 0<arguments.length?(this.x=a,this.y=b,this):{x:this.x,y:this.y}};q.prototype.toCanvas=function(){var a=document.createElement("canvas");a.height=this.frameHeight;a.width=this.frameWidth;var b=a.getContext("2d"),c=this.x,d=this.y;this.y=this.x=0;this.render(b);this.x=
-    c;this.y=d;return a};q.prototype.toBase64=function(){return this.img.toDataURL()};q.prototype.render=function(a){if(this._mouseIsActive&&(null!==this.mouseEnter||null!==this.mouseLeave)){var b;b=null!==w?{x:w.realPosition.x+D.x,y:w.realPosition.y+D.y}:D;var c=!1;b.x>=this.x&&b.y>=this.y&&b.x<=this.x+this.frameWidth&&b.y<=this.y+this.frameHeight&&(null===this.bitmask?c=!0:this.isPixel(b.x,b.y)&&(c=!0));b.x&&this._mouseIsOver!==c&&(c?null!==this.mouseEnter&&this.mouseEnter.call(this):null!==this.mouseLeave&&
-    this.mouseLeave.call(this),this._mouseIsOver=c)}b=this.ox*this.frameWidth;var c=this.oy*this.frameHeight,d=0.5+this.x<<0,e=0.5+this.y<<0;this.zIndexByYPos&&(this.z=e+this.frameHeight/2);a.translate(d,e);a.rotate(this.angleInRadians);this._outline?a.drawImage(this.imgOutlined,b,c,this.frameWidth,this.frameHeight,0,0,this.frameWidth,this.frameHeight):a.drawImage(this.img,b,c,this.frameWidth,this.frameHeight,0,0,this.frameWidth,this.frameHeight);a.rotate(-this.angleInRadians);a.translate(-d,-e)};q.prototype.isPixel=
-    function(a,b){return this.bitmask.test(a-this.x+this.ox*this.frameWidth,b-this.y+this.oy*this.frameHeight)};var y=function(a,b,c){q.call(this,a,b);this.spriteData=b;this.firstgid=c;this.tileSetWidth=a.width/b.w};y.prototype=Object.create(q.prototype);y.prototype.setTile=function(a){if(0===a)return!1;if(a>=this.firstgid){var b=0===a%this.tileSetWidth,c=Math.floor((a-(this.firstgid-1))/this.tileSetWidth);b&&(c-=1);this.subimage(b?this.tileSetWidth-1:a%this.tileSetWidth-1,c);return!0}return!1};y.prototype.splice=
-    function(){return new y(this.img,this.spriteData,this.firstgid)};var r=t.Animation=function(a,b,c,d,e){q.call(this,a,b);this.animations=c;this.durationPerStepInMs=d;a="undefined"===typeof e?r.Type.ONCE:e;this.pointer=0;this.isStoped=!0;this.elapsedTime=0;this.forward=!0;switch(a){case r.Type.BOUNCE:this.subupdate=ba;break;case r.Type.ENDLESS:this.subupdate=ca;break;case r.Type.ONCE:this.subupdate=da}};r.prototype=Object.create(q.prototype);r.prototype.play=function(){this.isStoped=!1;return this};
-    r.prototype.pause=function(){this.isStoped=!0;return this};r.prototype.reset=function(){this.isStoped=!0;this.pointer=0;return this};r.prototype.update=function(a,b){if(!this.isStoped)if(1===this.animations.length)this.subimage(this.animations[0].x,this.animations[0].y);else{if(this.elapsedTime>this.durationPerStepInMs){this.elapsedTime=0;this.subupdate();var c=this.animations[this.pointer];this.subimage(c.x,c.y)}this.elapsedTime+=b}};var da=function(){this.pointer<this.animations.length-1&&(this.pointer+=
-        1)},ca=function(){this.pointer=this.pointer<this.animations.length-1?this.pointer+1:0},ba=function(){0==this.pointer?this.forward=!0:this.pointer===this.animations.length-1&&(this.forward=!1);this.pointer=this.forward?this.pointer+1:this.pointer-1};r.Type={BOUNCE:0,ONCE:1,ENDLESS:2};var E=t.Entity=function(a,b,c){q.call(this,a,b);this.animations=[];this.pointer=this.elapsedTime=this.durationPerStepInMs=0;this.currentState="";this.allanimations=c;this.updateCallback=null;this.subupdate=function(){}};
-    E.prototype=Object.create(q.prototype);E.prototype.onUpdate=function(a){this.updateCallback=a;return this};E.prototype.animate=function(a){if(a!==this.currentState){var b=this.allanimations[a];if(b)switch(this.currentState=a,this.pointer=0,this.animations=b.anims,this.durationPerStepInMs=b.durationPerFrame,b.type){case r.Type.BOUNCE:this.subupdate=ba;break;case r.Type.ENDLESS:this.subupdate=ca;break;case r.Type.ONCE:this.subupdate=da}return this}};E.prototype.update=function(a,b){null!==this.updateCallback&&
-    this.updateCallback.call(this,a,b);if(0!==this.animations.length)if(1===this.animations.length)this.subimage(this.animations[0].x,this.animations[0].y);else{if(this.elapsedTime>this.durationPerStepInMs){this.elapsedTime=0;this.subupdate();var c=this.animations[this.pointer];this.subimage(c.x,c.y)}this.elapsedTime+=b}};var z=t.Map=function(a,b){var c=!0;this.tilesets=[];this.subtiles=[];this.subtilesTop=[];this.currentY=this.currentX=0;this.currentLY=this.currentLX=1;this.subtileWidth=100*a.tilewidth;
-        this.subtileHeight=100*a.tileheight;var d=Math.ceil(a.width*a.tilewidth/this.subtileWidth),e=Math.ceil(a.height*a.tileheight/this.subtileHeight);s("[Smila::Map->Ctor] create subs: "+d+" x "+e+"  {"+this.subtileWidth+" x "+this.subtileHeight+"} per Element");for(var f=0;f<d;f++){this.subtiles[f]=[];this.subtilesTop[f]=[];for(var p=0;p<e;p++){var g=document.createElement("canvas");g.width=this.subtileWidth;g.height=this.subtileHeight;this.subtiles[f][p]=g;g=document.createElement("canvas");g.width=
-            this.subtileWidth;g.height=this.subtileHeight;this.subtilesTop[f][p]=g}}for(var l=this,d=0;d<a.tilesets.length&&1>d;d++)if(e=a.tilesets[d].name,e in m)e=m[e],this.tileset=new y(e.canvas,e.meta,a.tilesets[0].firstgid),this.init(a);else{var k=a.tilesets[d],c=!1;ea.put({src:b.imgFolder+k.image.replace(/^.*[\\\/]/,""),w:k.tilewidth,h:k.tileheight,key:k.name},function(){var b=m[k.name];l.tileset=new y(b.canvas,b.meta,a.tilesets[0].firstgid);l.isready=!0;l.init(a)})}this.isready=c};z.prototype.renderBackground=
-        function(a,b,c,d,e){b=Math.floor(b/this.subtileWidth);c=Math.floor(c/this.subtileHeight);e=c*this.subtileHeight+(this.subtileHeight-c%this.subtileHeight)+e;d=Math.ceil((b*this.subtileWidth+(this.subtileWidth-b%this.subtileWidth)+d)/this.subtileWidth);e=Math.ceil(e/this.subtileHeight);0>b&&(b=0);0>c&&(c=0);b>=d&&(d=b+1);c>=e&&(e=c+1);d=Math.min(d,this.subtiles.length);this.currentX=b;this.currentY=c;this.currentLX=d;for(this.currentLY=e;b<d;b++)for(var f=c;f<e;f++)null!==this.subtiles[b][f]?a.drawImage(this.subtiles[b][f],
-            b*this.subtileWidth,f*this.subtileHeight):console.log("null at "+b+"|"+f)};z.prototype.renderTopLayer=function(a){for(var b=this.currentX,c=this.currentLX,d=this.currentLY;b<c;b++)for(var e=this.currentY;e<d;e++)null!==this.subtilesTop[b][e]?a.drawImage(this.subtilesTop[b][e],b*this.subtileWidth,e*this.subtileHeight):console.log("null at "+b+"|"+e)};z.prototype.onReady=function(a){if(this.isready)a();else{var b=this;setTimeout(function(){b.onReady(a)},100)}return this};z.prototype.init=function(a){var b=
-        a.layers[3],c=a.layers[2];Y([a.layers[0],a.layers[1]],this.subtiles,this.tileset,a.tilewidth,a.tileheight,a.width,this.subtileWidth,this.subtileHeight);Y(b,this.subtilesTop,this.tileset,a.tilewidth,a.tileheight,a.width,this.subtileWidth,this.subtileHeight);for(var b=this.tileset,d=a.width,e=a.tilewidth,f=a.tileheight,p=[],g=0;g<c.data.length;g++){var l=c.data[g];if(0!==l){var k=b.splice();k.setTile(l);k.position(g%d*e,Math.floor(g/d)*f);p.push(k)}}this.sprites=p;s("[Smila::Map->init] load dynamic sprites onto map: {"+
-        this.sprites.length+"}");if(4<a.layers.length&&1<a.tilesets.length){c=a.layers[4].data;b=a.tilesets[1].firstgid-1;d={};if(5<a.layers.length&&(g=a.tilewidth,l=a.tileheight,k=a.layers[5],"objectgroup"===k.type))for(e=0;e<k.objects.length;e++){var n=k.objects[e],f=Math.floor(n.x/g),p=Math.floor(n.y/l);d[f+"_"+p]={name:n.name,properties:n.properties}}this.eventLayer=[];for(f=0;f<a.width;f++)for(this.eventLayer[f]=[],p=0;p<a.height;p++)e=p*a.width+f,0===c[e]?this.eventLayer[f][p]=0:(g=f+"_"+p,l={},g in
-        d&&(l=d[g]),this.eventLayer[f][p]={id:c[e]-b,data:l})}};var I=t.Camera=function(){this.offset={x:0,y:0};this.realPosition={x:0,y:0}};I.prototype.translate=function(a,b){this.offset.x=a;this.offset.y=b;0===a&&0===b?(this.realPosition.x=Math.round(this.realPosition.x),this.realPosition.y=Math.round(this.realPosition.y)):(this.realPosition.x-=a,this.realPosition.y-=b)};I.prototype.render=function(){x.translate(this.offset.x,this.offset.y)};I.prototype.set=function(a,b){this.translate(this.realPosition.x-
-        a,this.realPosition.y-b);this.render();this.translate(0,0)};var m={},J={},w=null,ea=t.DataStore={putMap:function(a,b){if(a instanceof Array){var c=0,d=function(d){return function(f){if("string"===typeof f||f instanceof String)f=JSON.parse(f);c+=1;J[d.key]=new z(f,d);c===a.length&&b()}};a.forEach(function(a){fa(a,d(a))})}else fa(a,function(c){if("string"===typeof c||c instanceof String)c=JSON.parse(c);J[a.key]=new z(c,a);b()})},getMap:function(a){if(a in J)return J[a];throw"[Smila::DataStore->getMap] Cannot find key {"+
-            a+"}";},put:function(a,b){if(a instanceof Array){var c=[];a.forEach(function(d){ga(d,function(){c.push(0);c.length===a.length&&b()},function(){throw"[Smila::Datastore->put] cannot put element into Datastore";})})}else ga(a,function(){b()},function(){throw"[Smila::Datastore->put] cannot put element into Datastore";});return ea},get:function(a){if(a in m)return a=m[a],new q(a.canvas,a.meta);throw"[Smila::DataStore->get] cannot find {"+a+"}";},getAnimation:function(a,b,c,d){if(a in m)return a=m[a],new r(a.canvas,
-            a.meta,b,c,d);throw"[Smila::DataStore->getAnimation] cannot find {"+a+"}";},getEntity:function(a,b){if(a in m){var c=m[a];return new E(c.canvas,c.meta,b)}throw"[Smila::DataStore->getAnimation] cannot find {"+a+"}";}},F={},h=[],oa=0,v=null,ha=!1,K=null,O=-1,P=-1,u=null,x=null,D={x:-1,y:-1},ia=!1,ja,Q=[],A=0,G=0,L=0,M=0,B=0,R=0,S=0,ka=0,la=0,T=0,U=0,C=0,pa=function(){if(250>h.length)for(var a=1;a<h.length;a++){for(var b=h[a],c=a;1<c&&h[c-1].y>b.y;)h[c]=h[c-1],c--;h[c]=b}else{for(var d=Math.min(h.length-
-            1,C+250),a=C;a<d;a++){b=h[a];for(c=a;1<c&&h[c-1].y>b.y;)h[c]=h[c-1],c--;h[c]=b}C+=Math.floor(125);C>h.length&&(C=1)}},V=t.Renderer={onUpdate:function(a){a.$smilaId=oa++;F[a.$smilaId]=a},offUpdate:function(a){if("$smilaId"in a)delete F[a.$smilaId];else throw"[Smila::DataStore->offUpdate] cannot find the ID for the callback given at {onCallback}";},onSortSprites:function(a){},reset:function(){F={};h=[];v=null;clearInterval(ja)},isRunning:function(){return ha},setMap:function(a){v=a;v.onReady(function(){for(var a=
-            0;a<v.sprites.length;a++)h.push(v.sprites[a])});return this},add:function(a){h.push(a)},start:function(){s("[Smila::Renderer->start]");if(ia)throw"[Smila::Renderer->start] The Renderer is already started!";if(window.CanvasRenderingContext2D){h=[];var a=document.getElementById("smila");u=document.createElement("canvas");u.style.position="absolute";u.height=a.clientHeight;u.width=a.clientWidth;P=u.height;O=u.width;a.appendChild(u);u.onmousemove=function(a){var c=u.getBoundingClientRect();D.x=a.clientX-
-            c.left;D.y=a.clientY-c.top};x=u.getContext("2d");aa&&"undefined"!==typeof Stats&&(K=new Stats,document.body.appendChild(K.domElement));requestAnimationFrame(this.update);ja=setInterval(pa,500);w=new I;s("[Smila::Renderer->start] = success")}else document.getElementById("smila").innerHTML="[smila] is not supported!",s("[Smila::Renderer->start] = failed");ia=ha=!0},camera:function(){return w},update:function(){L=(new Date).getTime();G=L-(V.time||L);V.time=L;M=G/na;A=w.realPosition.x;B=w.realPosition.y;
-            S=O+20;R=P+20;ka=A-10;la=B-10;T=A+O;U=B+P;x.clearRect(ka,la,S,R);w.render();for(var a in F){var b=F[a];b.call(b,G,M)}null!==v&&v.renderBackground(x,A,B,S,R);for(a=0;a<h.length;a+=1)b=h[a],b.update&&b.update(M,G),(b.x+b.frameWidth|b.width)>=A&&b.x<=T&&(b.y+b.frameHeight|b.height)>=B&&b.y<=U&&b.render(x);for(a=0;a<Q.length;a++)Q[a].update(x,M,G,A,B,T,U);null!==v&&v.renderTopLayer(x);requestAnimationFrame(V.update);null!==K&&K.update()},createParticleEmitter:function(a){a=new W(a);Q.push(a);return a}},
-        W=t.ParticleEmitter=function(a){var b="undefined"===typeof a?100:a.particleCount||100;this.point=a.point||a.p;this.velocity=a.velocity||a.v||{x:0,y:0};this.direction=a.dir||a.direction;this.spread=a.spread||a.s;this.emissionRate=a.emissionRate||a.e;this.lifetimeMs=a.lifetimeMs||a.ttl||1E4;this.color=a.color||"#99CCFF";this.totalLifetime=a.totalLifetime||a.tlt||null;this.colorPointer=this.elapsed=0;this.angle=Math.atan2(this.direction.y,this.direction.x);this.magnitude=Math.sqrt(this.direction.x*this.direction.x+
-            this.direction.y*this.direction.y);b=new ArrayBuffer(28*b);this.view=new Float32Array(b);this.pointer=0;this.isActive="undefined"===typeof a.active?!0:a.active;this.particleCount=0};W.prototype.createParticle=function(a,b,c,d){this.pointer>=this.view.length&&(this.pointer=0);this.view[this.pointer]=a.x;this.view[this.pointer+1]=a.y;this.view[this.pointer+2]=b.x;this.view[this.pointer+3]=b.y;this.view[this.pointer+4]="undefined"!==typeof d?d.x:0;this.view[this.pointer+5]="undefined"!==typeof d?d.y:
-        0;this.view[this.pointer+6]=c;a=this.pointer;this.particleCount+=1;this.pointer+=7;return a};W.prototype.update=function(a,b,c,d,e,f,p){if(this.isActive){if(null!==this.totalLifetime){if(0>this.totalLifetime){this.isActive=!1;return}this.totalLifetime-=c}Array.isArray(this.color)?(a.fillStyle=this.color[this.colorPointer],this.colorPointer=this.colorPointer===this.color.length?0:this.colorPointer+1):a.fillStyle=this.color;this.elapsed+=c;if(50<this.elapsed){var g=this.elapsed=0;for(b=0;b<this.emissionRate/
-        2;b++)g=this.angle+this.spread-Math.random()*this.spread*2,this.createParticle(this.point,{x:this.magnitude*Math.cos(g),y:this.magnitude*Math.sin(g)},this.lifetimeMs)}var l=g=0,k=this.view;for(b=0;b<this.particleCount;b++)if(g=7*b,0<k[g+6]){l=b;k[g+6]-=c;var n=k,h=g,m=g+2;n[h]+=n[m];n[h+1]+=n[m+1];n=k;h=g+2;m=g+4;n[h]+=n[m];n[h+1]+=n[m+1];k[g]>=d&&k[g]<=f&&k[g+1]>=e&&k[g+1]<=p&&a.fillRect(k[g],k[g+1],2,2)}this.particleCount=l;this.point.x+=this.velocity.x;this.point.y+=this.velocity.y}};var N=function(a,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   b){var c=a%8;0!==c&&(a=a+8-c);a=Math.ceil(a/8);c=new ArrayBuffer(a*b);this.data=new Uint8Array(c);this.bytePerRow=a|0;this.width=a;this.height=b};N.prototype.set=function(a,b){var c=this.bytePerRow*b,d=a/8,c=c+(d|d),d=this.data[c];this.data[c]=d|1<<a%8;return this};N.prototype.clear=function(a,b){var c=this.bytePerRow*b,d=a/8,c=c+(d|d),d=this.data[c];this.data[c]=d&~(1<<a%8);return this};N.prototype.test=function(a,b){var c=this.bytePerRow*b,d=a/8;return 0!=(this.data[c+(d|d)]&1<<a%8)};var fa=function(a,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              b){s("[Smila::*->loadMap] ... start loading map ...");var c=new XMLHttpRequest;c.onreadystatechange=function(){4==c.readyState&&b(c.responseText)};c.open("GET",a.src,!0);c.send(null)},ga=function(a,b,c){s("[Smila::*->loadSprite] {"+a.key+"}");a.w=a.w||a.width;a.h=a.h||a.height;a.o=a.o||a.outline|0;a.bm=a.bm||a.bitmask|0;if("undefined"!==typeof a.outlineColor||"undefined"!==typeof a.ocol)a.ocol=a.outlineColor||a.ocol;var d=new Image;d.onload=function(){s("[Smila::*->loadSprite] Image is loaded {"+
-        a.key+"}");var c=document.createElement("canvas");c.width=d.width;c.height=d.height;var f=c.getContext("2d");f.drawImage(d,0,0);m[a.key]={meta:a,canvas:c};if(a.o){var h=a.key+"_outline";if(!(h in m)){var g=document.createElement("canvas");g.width=d.width;g.height=d.height;var l=g.getContext("2d");l.drawImage(c,0,0);var c=l.getImageData(0,0,d.width,d.height),k=a.ocol||$,c=ma(d.width,d.height,c,k),c=ma(d.width,d.height,c,k);l.putImageData(c,0,0);m[h]={meta:a,canvas:g}}}if(a.bm&&(h=a.key+"_bitmask",
-        !(h in m))){g=new N(d.width,d.height);c=f.getImageData(0,0,d.width,d.height);for(f=0;f<d.width;f++)for(l=0;l<d.height;l++)0!==H(c,f,l).a&&g.set(f,l);m[h]=g}b()};d.onerror=function(){s("[Smila::*->loadSprite] Could not load Image {"+a.key+"}");c()};a.key in m?(s("[Smila::*->loadSprite] load from Cache: {"+a.key+"}"),b()):void 0!==a.base64?(s("[Smila::*->loadSprite] load from base64: {"+a.key+"}"),d.src=a.base64):(s("[Smila::*->loadSprite] load from URL: {"+a.key+"} {"+a.src+"}"),d.src=Z+a.src)},X=
-        function(a,b,c,d,e,f,h){b=4*(b+c*a.width);a.data[b+0]=d;a.data[b+1]=e;a.data[b+2]=f;a.data[b+3]=h},H=function(a,b,c){b=4*(b+c*a.width);return{r:a.data[b+0],g:a.data[b+1],b:a.data[b+2],a:a.data[b+3]}},ma=function(a,b,c,d){for(var e=1;e<=b;e++)for(var f=1;f<=a;f++)if(0===H(c,f,e).a){var h=1!=f,g=f!=a-1;e!=b-1&&0!==H(c,f,e+1).a?X(c,f,e,d.r,d.g,d.b,d.a):h&&0!==H(c,f-1,e).a?(X(c,f,e,d.r,d.g,d.b,d.a),f+=1):g&&0!==H(c,f+1,e).a&&X(c,f,e,d.r,d.g,d.b,d.a)}return c},s=function(a){console.log(a)};window.requestAnimationFrame=
-        window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||window.msRequestAnimationFrame;return t}();
+window.Smila = function () {
+
+    function Smila() {
+    };
+
+    // SETTINGS
+    var useWebGL = false;
+    var imagePath = "";
+    var defaultOutlineColor = {r:255, g:0, b:0, a:255};
+    var verbose;
+
+    var EXPECTED_ELAPSED_MILLIS = Math.floor(1000 / 60);
+
+    /**
+     *
+     * @param options {object}
+     * {
+     *      useWebGL : {Boolean}
+     *      imagePath : {String}
+     * }
+     */
+    Smila.Settings = function (options) {
+        useWebGL = options.useWebGL || false;
+        imagePath = options.imagePath || "";
+        defaultOutlineColor = options.defaultOutlineColor || {r:255, g:0, b:0, a:255};
+        verbose = options.verbose || false;
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //       C L A S S E S
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /**
+     *
+     * @type {Function}
+     */
+    var Sprite = Smila.Sprite = function (canvas, spriteData) {
+        this.img = canvas;
+        this.frameHeight = spriteData.h;
+        this.frameWidth = spriteData.w;
+        if (spriteData.o == true) {
+            // when a outline for this sprite is specified, we will take it
+            this.imgOutlined = spriteCache[spriteData.key + "_outline"].canvas;
+        }
+        if (spriteData.bm) {
+            // if a bitmask for this sprite is specified, we will take it
+            this.bitmask = spriteCache[spriteData.key + "_bitmask"];
+        } else {
+            this.bitmask = null;
+        }
+        this.ox = 0 | 0;
+        this.oy = 0 | 0;
+        this.zIndexByYPos = true;
+        this.x = 0 | 0;
+        this.y = 0 | 0;
+        this.z = 0 | 0;
+        this.mouseEnter = null;
+        this.mouseLeave = null;
+        this._mouseIsActive = false;
+        this._outline = false;
+        this.angleInRadians = 0;
+    };
+
+    Sprite.prototype.onmouseenter = function (callback) {
+        this._mouseIsActive = true;
+        this.mouseEnter = callback;
+        return this;
+    };
+
+    Sprite.prototype.onmouseleave = function (callback) {
+        this._mouseIsActive = true;
+        this.mouseLeave = callback;
+        return this;
+    };
+
+    /**
+     * @param outline {Boolean}
+     * @return {Sprite}
+     */
+    Sprite.prototype.outline = function (outline) {
+        this._outline = outline;
+        return this;
+    };
+
+    Sprite.prototype.subimage = function (x, y) {
+        this.ox = x;
+        this.oy = y;
+        return this;
+    };
+
+    /**
+     * If no parameters are passed, this function gives the position of the sprite, else it sets its position
+     * @param x
+     * @param y
+     * @return {Sprite} || {Position}
+     */
+    Sprite.prototype.position = function (x, y) {
+        if (arguments.length > 0) {
+            this.x = x;
+            this.y = y;
+            return this;
+        }
+        return {x:this.x, y:this.y};
+    };
+
+    Sprite.prototype.toCanvas = function () {
+        var canvas = document.createElement('canvas');
+        canvas.height = this.frameHeight;
+        canvas.width = this.frameWidth;
+        var ctx = canvas.getContext('2d');
+        var oldX = this.x;
+        var oldY = this.y;
+        this.x = 0;
+        this.y = 0;
+        this.render(ctx);
+        this.x = oldX;
+        this.y = oldY;
+        return canvas;
+    };
+
+    Sprite.prototype.toBase64 = function () {
+        return this.img.toDataURL();
+    };
+
+    Sprite.prototype.render = function (context) {
+        if (this._mouseIsActive) {
+            if (this.mouseEnter !== null || this.mouseLeave !== null) {
+                var mousePos = getAbsoluteMousePosition();
+                var currentMouseIsOver = false;
+                if (mousePos.x >= this.x && mousePos.y >= this.y) {
+                    if (mousePos.x <= (this.x + this.frameWidth) && mousePos.y <= (this.y + this.frameHeight)) {
+                        if (this.bitmask === null) {
+                            currentMouseIsOver = true;
+                        } else {
+                            if (this.isPixel(mousePos.x, mousePos.y)) {
+                                currentMouseIsOver = true;
+                            }
+                        }
+                    }
+                }
+                if (mousePos.x)
+                    if (this._mouseIsOver !== currentMouseIsOver) {
+                        if (currentMouseIsOver) {
+                            if (this.mouseEnter !== null) this.mouseEnter.call(this);
+                        } else {
+                            if (this.mouseLeave !== null) this.mouseLeave.call(this);
+                        }
+                        this._mouseIsOver = currentMouseIsOver;
+                    }
+            }
+        }
+
+        var sx = this.ox * this.frameWidth;
+        var sy = this.oy * this.frameHeight;
+        var x = (0.5 + this.x) << 0;
+        var y = (0.5 + this.y) << 0;
+        if (this.zIndexByYPos) this.z = y + (this.frameHeight / 2);
+        context.translate(x, y);
+        context.rotate(this.angleInRadians);
+        if (this._outline) {
+            context.drawImage(this.imgOutlined, sx, sy, this.frameWidth, this.frameHeight, 0, 0, this.frameWidth, this.frameHeight);
+        } else {
+            context.drawImage(this.img, sx, sy, this.frameWidth, this.frameHeight, 0, 0, this.frameWidth, this.frameHeight);
+            //context.drawImage(this.img, sx, sy, this.frameWidth, this.frameHeight, minusx, minusy, this.frameWidth, this.frameHeight);
+        }
+        context.rotate(-this.angleInRadians);
+        context.translate(-x, -y);
+    };
+
+    /**
+     *  Tests, if a pixel got hit by absolute x y
+     */
+    Sprite.prototype.isPixel = function (x, y) {
+        var normalizedX = x - this.x + (this.ox * this.frameWidth);
+        var normalizedY = y - this.y + (this.oy * this.frameHeight);
+        return this.bitmask.test(normalizedX, normalizedY);
+    };
+
+    var TileSet = function (canvas, spriteData, firstgid) {
+        Sprite.call(this, canvas, spriteData);
+        this.spriteData = spriteData;
+        this.firstgid = firstgid;
+        this.tileSetWidth = canvas.width / spriteData.w;
+    };
+
+    TileSet.prototype = Object.create(Sprite.prototype);
+
+    /**
+     *
+     * @param id
+     * @return {Boolean} When True, the tile is actually set!
+     */
+    TileSet.prototype.setTile = function (id) {
+        //if (id < this.firstgid) throw "ERROR: [Smila::TileSet->setTile] Cannot apply id {" + id + "}";
+        if (id === 0) return false;
+        if (id >= this.firstgid){
+            var lastRow = id % this.tileSetWidth === 0;
+            var row = Math.floor((id - (this.firstgid - 1)) / this.tileSetWidth);
+            if (lastRow) row -= 1;
+            var column = lastRow ? (this.tileSetWidth - 1) : (id % this.tileSetWidth) - 1;
+            this.subimage(column,row);
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * Creates a sprite form the tileset that points to a specific
+     */
+    TileSet.prototype.splice = function(){
+        return new TileSet(this.img, this.spriteData,this.firstgid);
+    };
+
+    /**
+     * @param sprite {Sprite}
+     * @param animations {Array}
+     * @param durationPerStep {Number}
+     * @param type {Animation.Type}
+     * @type {Function}
+     */
+    var Animation = Smila.Animation = function (canvas, spriteData, animations, durationPerStep, type) {
+        Sprite.call(this, canvas, spriteData);
+        this.animations = animations;
+        this.durationPerStepInMs = durationPerStep;
+        var atype = typeof type === 'undefined' ? Animation.Type.ONCE : type;
+        this.pointer = 0;
+        this.isStoped = true;
+        this.elapsedTime = 0;
+        this.forward = true;
+        switch (atype) {
+            case Animation.Type.BOUNCE:
+                this.subupdate = BOUNCE_UPDATE;
+                break;
+            case Animation.Type.ENDLESS:
+                this.subupdate = ENDLESS_UPDATE;
+                break;
+            case Animation.Type.ONCE:
+                this.subupdate = ONCE_UPDATE;
+                break;
+        }
+    };
+
+    Animation.prototype = Object.create(Sprite.prototype);
+
+    Animation.prototype.play = function () {
+        this.isStoped = false;
+        return this;
+    };
+
+    Animation.prototype.pause = function () {
+        this.isStoped = true;
+        return this;
+    };
+
+    Animation.prototype.reset = function () {
+        this.isStoped = true;
+        this.pointer = 0;
+        return this;
+    };
+
+    Animation.prototype.update = function (dt, elapsedMillis) {
+        if (!this.isStoped) {
+            if (this.animations.length === 1) {
+                this.subimage(this.animations[0].x, this.animations[0].y);
+            } else {
+                if (this.elapsedTime > this.durationPerStepInMs) {
+                    this.elapsedTime = 0;
+                    this.subupdate();
+                    var current = this.animations[this.pointer];
+                    this.subimage(current.x, current.y);
+                }
+                this.elapsedTime += elapsedMillis;
+            }
+        }
+    };
+
+    var ONCE_UPDATE = function () {
+        if (this.pointer < this.animations.length - 1) this.pointer += 1;
+    };
+
+    var ENDLESS_UPDATE = function () {
+        if (this.pointer < (this.animations.length - 1)) this.pointer += 1;
+        else this.pointer = 0;
+    };
+
+    var BOUNCE_UPDATE = function () {
+        if (this.pointer == 0) this.forward = true;
+        else if (this.pointer === (this.animations.length - 1)) this.forward = false;
+        if (this.forward) this.pointer += 1;
+        else this.pointer -= 1;
+    };
+
+    Animation.Type = {
+        BOUNCE:0,
+        ONCE:1,
+        ENDLESS:2
+    };
+
+    /**
+     * A more complex Animation-Sprite. Allows to use more than one animation-type
+     * @param canvas {Canvas} used for SpriteData
+     * @param spriteData {spriteData} used for SpriteData
+     * @param animations {Object}
+     * {
+     *     "up" : {anims:[], durationPerFrame:66, type:Animation.BOUNCE  },
+     *     "down" : {anims:[], durationPerFrame:66, type:Animation.BOUNCE  }
+     * }
+     * @type {Function}
+     */
+    var Entity = Smila.Entity = function (canvas, spriteData, animations) {
+        Sprite.call(this, canvas, spriteData);
+        this.animations = [];
+        this.durationPerStepInMs = 0;
+        this.elapsedTime = 0;
+        this.pointer = 0;
+        this.currentState = "";
+        this.allanimations = animations;
+        this.updateCallback = null;
+        this.subupdate = function () {
+        };
+    };
+
+    Entity.prototype = Object.create(Sprite.prototype);
+
+    Entity.prototype.onUpdate = function (callback) {
+        this.updateCallback = callback;
+        return this;
+    };
+
+    Entity.prototype.animate = function (key) {
+        if (key === this.currentState) return;
+        var anim = this.allanimations[key];
+        if (anim) {
+            this.currentState = key;
+            this.pointer = 0;
+            this.animations = anim.anims;
+            this.durationPerStepInMs = anim.durationPerFrame;
+            switch (anim.type) {
+                case Animation.Type.BOUNCE:
+                    this.subupdate = BOUNCE_UPDATE;
+                    break;
+                case Animation.Type.ENDLESS:
+                    this.subupdate = ENDLESS_UPDATE;
+                    break;
+                case Animation.Type.ONCE:
+                    this.subupdate = ONCE_UPDATE;
+                    break;
+            }
+        }
+        return this;
+    };
+
+    Entity.prototype.update = function (dt, elapsedMillis) {
+        // TODO remove duplicated code with Animation
+        if (this.updateCallback !== null) this.updateCallback.call(this, dt, elapsedMillis);
+        if (this.animations.length === 0) return;
+        if (this.animations.length === 1) {
+            this.subimage(this.animations[0].x, this.animations[0].y);
+        } else {
+            if (this.elapsedTime > this.durationPerStepInMs) {
+                this.elapsedTime = 0;
+                this.subupdate();
+                var current = this.animations[this.pointer];
+                this.subimage(current.x, current.y);
+            }
+            this.elapsedTime += elapsedMillis;
+        }
+    };
+
+    var MAP_TILE_SIZE = 100;
+
+    /**
+     * This is a Tiled-Map (http://www.mapeditor.org/)
+     * The map needs to be squared and split into 4 layers
+     *  ______
+     * | Background (0) - Gets rendered behind all other elements (static)
+     * |  _______
+     * | | Background (1) - Gets rendered behind all other elements but before the 0-Background (static)
+     * | |  ____________
+     * | | | Dymamic (2) - Gets rendered and interacts with other entities based on its y-value (dynamic)
+     * | | |  ______________
+     * | | | | Top (3) - Gets rendered over all other elements, even Particles (static)
+     * | | | |  __________
+     * | | | | | Events (4) - Event system: subtracts the grid id with its tilesets firstgid. 0 Means no event, 1 means "non-movable", all others get triggered
+     * | | | | |
+     * | | | | |    ************************
+     * | | | | |    * Event-Objects (5) - Event system: Key-Value-Stores to events!
+     * | | | | |    *
+     * | | | | |    *
+     * @type {Function}
+     */
+    var Map = Smila.Map = function (json, mapData) {
+        var allTilesetsAreLoaded = true;
+        this.tilesets = [];
+        this.subtiles = [];     // Background
+        this.subtilesTop = [];    // Topground
+
+        this.currentX = 0;
+        this.currentY = 0;
+        this.currentLX = 1;
+        this.currentLY = 1;
+
+        this.w = json.width;
+        this.h = json.height;
+
+        this.subtileWidth = MAP_TILE_SIZE * json.tilewidth;
+        this.subtileHeight = MAP_TILE_SIZE * json.tileheight;
+
+        var xSteps = Math.ceil((json.width * json.tilewidth) / this.subtileWidth);
+        var ySteps = Math.ceil((json.height * json.tileheight) / this.subtileHeight);
+
+        log("[Smila::Map->Ctor] create subs: " + xSteps + " x " + ySteps + "  {" + this.subtileWidth + " x " + this.subtileHeight + "} per Element")
+
+        for (var x = 0; x < xSteps; x++) {
+            this.subtiles[x] = [];
+            this.subtilesTop[x] = [];
+            for (var y = 0; y < ySteps; y++) {
+                var canvas = document.createElement("canvas");
+                canvas.width = this.subtileWidth;
+                canvas.height = this.subtileHeight;
+                this.subtiles[x][y] = canvas;
+                var canvast = document.createElement("canvas");
+                canvast.width = this.subtileWidth;
+                canvast.height = this.subtileHeight;
+                this.subtilesTop[x][y] = canvast;
+            }
+        }
+        var self = this;
+        for (var i = 0; i < json.tilesets.length && i < 1; i++) { // only load the first!
+            var key = json.tilesets[i].name;
+            if (key in spriteCache) {
+                var ctx = spriteCache[key];
+                //this.tilesets.push(new TileSet(ctx.canvas, ctx.meta, json.tilesets[i].firstgid));
+                this.tileset = new TileSet(ctx.canvas, ctx.meta, json.tilesets[0].firstgid);
+                this.init(json);
+            } else {
+                var ts = json.tilesets[i];
+                allTilesetsAreLoaded = false;
+                DataStore.put({
+                    src:mapData.imgFolder + ts.image.replace(/^.*[\\\/]/, ''),
+                    w:ts.tilewidth,
+                    h:ts.tileheight,
+                    key:ts.name
+                }, function () {
+                    //todo: When more then 1 tileset is loaded, this code won't work!
+                    var ctx = spriteCache[ts.name];
+                    self.tileset = new TileSet(ctx.canvas, ctx.meta, json.tilesets[0].firstgid);
+                    self.isready = true;
+                    self.init(json);
+                });
+            }
+        }
+        this.isready = allTilesetsAreLoaded;
+    };
+
+    Map.prototype.renderBackground = function (ctx, cameraX, cameraY, viewport_w, viewport_h) {
+        var x = Math.floor(cameraX / this.subtileWidth);
+        var y = Math.floor(cameraY / this.subtileHeight);
+        var rx = (x * this.subtileWidth) + (this.subtileWidth - (x % this.subtileWidth)) + viewport_w;
+        var by = (y * this.subtileHeight) + (this.subtileHeight - (y % this.subtileHeight)) + viewport_h;
+        var X = Math.ceil(rx / this.subtileWidth);
+        var Y = Math.ceil(by / this.subtileHeight);
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+        if (x >= X) X = x + 1;
+        if (y >= Y) Y = y + 1;
+        X = Math.min(X, this.subtiles.length);
+        Y = Math.min(Y, this.subtiles[0].length);
+        this.currentX = x;
+        this.currentY = y;
+        this.currentLX = X;
+        this.currentLY = Y;
+        for (; x < X; x++) {
+            for (var ty = y; ty < Y; ty++) {
+                if (this.subtiles[x][ty] !== null) {
+                    ctx.drawImage(this.subtiles[x][ty], x * this.subtileWidth, ty * this.subtileHeight);
+                } else {
+                    console.log("null at " + x + "|" + ty);
+                }
+
+            }
+        }
+    };
+
+    Map.prototype.renderTopLayer = function(ctx){
+        // we calculated the positions for this round inside of the method "renderBackground" already,
+        // so we dont need to get them back!
+        var x = this.currentX;
+        var X = this.currentLX;
+        var Y = this.currentLY;
+        for(; x < X;x++){
+            for (var y = this.currentY; y < Y; y++){
+                if (this.subtilesTop[x][y] !== null) {
+                    ctx.drawImage(this.subtilesTop[x][y], x * this.subtileWidth, y * this.subtileHeight);
+                } else {
+                    console.log("null at " + x + "|" + y);
+                }
+            }
+        }
+    }
+
+    Map.prototype.onReady = function (callback) {
+        if (this.isready) callback();
+        else {
+            var self = this;
+            setTimeout(function () {
+                self.onReady(callback);
+            }, 100);
+        }
+        return this;
+    };
+
+    Map.prototype.init = function (json) {
+        var bottom = json.layers[0];
+        var bottom2 = json.layers[1];
+        var top = json.layers[3];
+        var dyn = json.layers[2];
+        _mapLayerToCanvas([bottom,bottom2],this.subtiles, this.tileset,json.tilewidth, json.tileheight, json.width, this.subtileWidth,this.subtileHeight);
+        _mapLayerToCanvas(top,this.subtilesTop, this.tileset,json.tilewidth, json.tileheight, json.width, this.subtileWidth,this.subtileHeight);
+        this.sprites = _createSpritesFromDynamicLayer(dyn, this.tileset, json.width,json.tilewidth, json.tileheight);
+        log("[Smila::Map->init] load dynamic sprites onto map: {" + this.sprites.length + "}");
+        if (json.layers.length > 4 && json.tilesets.length > 1){
+            var events = json.layers[4].data;
+            var eventFGID = (json.tilesets[1].firstgid) - 1;
+
+            // Key-Value-store with: x_y : { .. }, like: 10_4 : { name: "Jul" }
+            var eventDataLookup = {};
+            if (json.layers.length > 5){
+                var tileWidth = json.tilewidth;
+                var tileHeight = json.tileheight;
+                var objs = json.layers[5];
+                if(objs.type === "objectgroup"){
+                    for(var i = 0; i < objs.objects.length; i++){
+                        var current = objs.objects[i];
+                        var x = Math.floor(current.x / tileWidth);
+                        var y = Math.floor(current.y / tileHeight);
+                        eventDataLookup[x + "_" + y] = {
+                            name : current.name,
+                            properties : current.properties
+                        }
+                    }
+                }
+            }
+
+
+
+            this.eventLayer = [];
+            for(var x = 0; x < json.width; x++){
+                this.eventLayer[x] = [];
+                for (var y = 0; y < json.height; y++){
+                    var i = y * json.width + x;
+                    if (events[i] === 0) this.eventLayer[x][y] = 0;
+                    else{
+                        var key = x + "_" + y;
+                        var data = {};
+                        var value = events[i] - eventFGID;
+                        if (key in eventDataLookup){
+                            data = eventDataLookup[key];
+                        }
+                        this.eventLayer[x][y] = {
+                            id : events[i] - eventFGID,
+                            data : data
+                        };
+                    }
+                }
+            }
+        }
+    };
+
+    function _createSpritesFromDynamicLayer(layer, tileset, width, tilewidth, tileheight){
+        var sprites = [];
+        for (var i = 0; i < layer.data.length;i++){
+            var j = layer.data[i];
+            if (j !== 0){
+                var ts = tileset.splice();
+                ts.setTile(j);
+                var y = (Math.floor(i / width)) * tileheight;
+                var x = (i % width) * tilewidth;
+                ts.position(x,y);
+                sprites.push(ts);
+            }
+        }
+        return sprites;
+    };
+
+    function _mapLayerToCanvas(layer,canvasMatrix, tileset, tilewidth, tileheight, width,subtileWidth,subtileHeight){
+        var sec = null; // currently only 2 extra layers are supported
+        if (Array.isArray(layer)){
+            sec = layer[1];
+            layer = layer[0];
+        }
+
+        for (var X = 0; X < canvasMatrix.length; X++) {
+            for (var Y = 0; Y < canvasMatrix[0].length; Y++) {
+                var ctx = canvasMatrix[X][Y].getContext("2d");
+                var ctxX = 0;
+                var ctxY = 0;
+                for (var x = X * subtileWidth; x < ((X + 1) * subtileWidth) - 1; x += tilewidth) {
+                    ctxY = 0;
+                    for (var y = Y * subtileHeight; y < ((Y + 1) * subtileHeight) - 1; y += tileheight) {
+                        var tx = x / tilewidth;
+                        var ty = y / tileheight;
+                        var i = ty * width + tx;
+                        if(i < layer.data.length){
+                            if (tx < width){
+                                tileset.position(ctxX,ctxY);
+                                if(tileset.setTile(layer.data[i])){
+                                    tileset.render(ctx);
+                                }
+                                if (sec !== null){
+                                    if (tileset.setTile(sec.data[i])){
+                                        tileset.render(ctx);
+                                    }
+                                }
+                            }
+                        }
+                        ctxY += tileheight;
+                    }
+                    ctxX += tilewidth;
+                }
+            }
+        }
+    };
+
+    /**
+     *
+     * @type {Function}
+     */
+    var Camera = Smila.Camera = function () {
+        this.offset = {x:0, y:0};
+        this.realPosition = {x:0, y:0};
+    };
+
+    Camera.prototype.translate = function (offsetX, offsetY) {
+        this.offset.x = offsetX;
+        this.offset.y = offsetY;
+        if (offsetX === 0 && offsetY === 0) {
+            this.realPosition.x = Math.round(this.realPosition.x);
+            this.realPosition.y = Math.round(this.realPosition.y);
+        } else {
+            this.realPosition.x -= offsetX;
+            this.realPosition.y -= offsetY;
+        }
+    };
+
+    Camera.prototype.render = function () {
+        context.translate(this.offset.x, this.offset.y);
+    };
+
+    Camera.prototype.set = function (x, y) {
+        var transX = this.realPosition.x - x;
+        var transY = this.realPosition.y - y;
+        this.translate(transX, transY);
+        this.render();
+        this.translate(0, 0);
+    };
+
+    /**
+     * Private Cache for DataStore
+     * @type {Object}
+     * {
+     *      key : { meta: { .. }, canvas: { HTMLCanvas } }
+     *      ...
+     * }
+     */
+    var spriteCache = {};
+
+    /**
+     * Private Cache for
+     * @type {Object}
+     */
+    var mapCache = {};
+
+    var camera = null;
+
+    var DataStore = Smila.DataStore = {
+
+        /**
+         * puts maps into the Datastore
+         * @param mapData {Object} or {Array} of Objects:
+         * {
+         *      src: "/res/maps/map.json", {String}
+         *      imgFolder: "/res/img/", {String}
+         *      key : "map01" {String}
+         * }
+         * @param callback {function}
+         */
+        putMap:function (mapData, callback) {
+            if (mapData instanceof Array) {
+                var c = 0;
+                var funcLoadHelper = function (element) {
+                    return function (json) {
+                        if (typeof json === 'string' || json instanceof String) {
+                            json = JSON.parse(json);
+                        }
+                        c += 1;
+                        mapCache[element.key] = new Map(json, element);
+                        if (c === mapData.length) {
+                            callback();
+                        }
+                        ;
+                    };
+                };
+                mapData.forEach(function (element) {
+                    loadMap(element, funcLoadHelper(element));
+                });
+            } else {
+                loadMap(mapData, function (json) {
+                    if (typeof json === 'string' || json instanceof String) {
+                        json = JSON.parse(json);
+                    }
+                    mapCache[mapData.key] = new Map(json, mapData);
+                    callback();
+                });
+            }
+        },
+
+        getMap:function (key) {
+            if (key in mapCache) {
+                return mapCache[key];
+            } else {
+                throw "[Smila::DataStore->getMap] Cannot find key {" + key + "}";
+            }
+        },
+
+        /**
+         * puts one or multiple Sprite-Layouts (
+         * {
+         *      src : "/res/image.png",   {String}
+         *      base64 : "base64/png...",   {String}
+         *      w : width : 64   {Integer}
+         *      h : height : 64   {Integer}
+         *      o : outline : true  {Boolean} // optional
+         *      bm : bitmask : true  {Boolean} // optional
+         *      key : "character"  {String}
+         *      ocol : outlineColor : {r:125, g:0, b:0, a:255 }  {Object} // optional
+         * }
+         * @param spriteData {Object} or {Array} of Sprite-Layouts
+         * @param callback {function} gets called, when all spriteData is loaded
+         * @return {Smila.DataStore}
+         */
+        put:function (spriteData, callback) {
+            if (spriteData instanceof Array) {
+                var acc = [];
+                spriteData.forEach(function (element) {
+                    loadSprite(element, function () {
+                        acc.push(0);
+                        if (acc.length === spriteData.length) {
+                            callback();
+                        }
+                    }, function () {
+                        throw "[Smila::Datastore->put] cannot put element into Datastore";
+                    });
+                });
+
+            } else {
+                loadSprite(spriteData, function () {
+                    callback();
+                }, function () {
+                    throw "[Smila::Datastore->put] cannot put element into Datastore";
+                })
+            }
+
+            return DataStore;
+        },
+
+        /**
+         * gets the loaded Sprite
+         * @param key {String}
+         * @return {Smila.Sprite}
+         */
+        get:function (key) {
+            if (key in spriteCache) {
+                var data = spriteCache[key];
+                return new Sprite(data.canvas, data.meta);
+            }
+            throw "[Smila::DataStore->get] cannot find {" + key + "}";
+        },
+
+        /**
+         *
+         * @param key {String}
+         * @param animations {Array} : [{x:0,y:1},{x:2,y:0},..]
+         * @param durationPerFrameInMs {Integer}
+         * @param type {Animation.Type}
+         */
+        getAnimation:function (key, animations, durationPerFrameInMs, type) {
+            if (key in spriteCache) {
+                var data = spriteCache[key];
+                return new Animation(data.canvas, data.meta, animations, durationPerFrameInMs, type);
+            }
+            throw "[Smila::DataStore->getAnimation] cannot find {" + key + "}";
+        },
+
+        /**
+         *
+         * @param key {String}
+         * @param animations {Object}
+         * {
+         *    "up" : {anims:[], durationPerFrame:66, type:Animation.BOUNCE  },
+         *    "down" : {anims:[], durationPerFrame:66, type:Animation.BOUNCE  }
+         * }
+         */
+        getEntity:function (key, animations) {
+            if (key in spriteCache) {
+                var data = spriteCache[key];
+                return new Entity(data.canvas, data.meta, animations);
+            }
+            throw "[Smila::DataStore->getAnimation] cannot find {" + key + "}";
+        }
+
+    };
+
+
+    var updateCallbacks = {};
+    var renderItems = [];
+    var onUpdateCallbackPointer = 0;
+    var map = null;
+
+    var rendererIsRunning = false;
+
+    var stats = null;
+    var dimension = {w:-1, h:-1};
+
+    /**
+     * The global Canvas, on that all content is renderered
+     * @type {HTML5Canvas}
+     */
+    var canvas = null;
+
+    var context = null;
+
+    /**
+     * The requestanimationframe-Thread
+     * @type {Number}
+     */
+    var thread = -1;
+
+    var mousePosition = {x:-1, y:-1};
+
+    /**
+     * @type {Boolean} It is not allowed to start the renderer twice
+     */
+    var isStarted = false;
+
+    var ELEMENT_NAME = "smila";
+
+    /**
+     * Default sort function. Sorts sprites after there y values.
+     * @param sprites
+     * @constructor
+     */
+    var SORT_BY_Y_VALUE = function (sprites) {
+        return quickSort(sprites, 0, sprites.length);
+    };
+
+    // ---------------
+    // -- QUICKSORT --
+    // ---------------
+    //TODO remove recursion
+
+    function partition(array, left, right) {
+        var cmp = array[right - 1].y, minEnd = left, maxEnd;
+        for (maxEnd = left; maxEnd < right - 1; maxEnd += 1) {
+            if (array[maxEnd].y <= cmp) {
+                swap(array, maxEnd, minEnd);
+                minEnd += 1;
+            }
+        }
+        swap(array, minEnd, right - 1);
+        return minEnd;
+    };
+
+    function swap(array, i, j) {
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
+    };
+
+    function quickSort(array, left, right) {
+        if (left < right) {
+            var p = partition(array, left, right);
+            quickSort(array, left, p);
+            quickSort(array, p + 1, right);
+        }
+        return array;
+    };
+
+
+    // ---------------
+    // -- QUICKSORT --
+    // ---------------
+
+    var sortFunction = SORT_BY_Y_VALUE;
+
+    var renderLoopIndex = 0;
+
+    var sortingThread;
+
+    var particleEmitters = [];
+
+    // Renderer update variables (to not create new objects all the time!)
+    var cameraRealX = 0;
+    var elapsed = 0;
+    var now = 0;
+    var dt = 0;
+    var cameraRealY = 0;
+    var clearRect_h = 0;
+    var clearRect_w = 0;
+    var clearX = 0;
+    var clearY = 0;
+    var rightOuterBound = 0;
+    var bottomBound = 0;
+    // -------------------------
+
+    var lastI = 0;
+    var MAX_SORT_INDEX = 250;
+
+    /**
+     * sort sprites after its Y-Value
+     * @constructor
+     */
+    var YsortSprites = function () {
+        if (renderItems.length < MAX_SORT_INDEX) {
+            // if the number of sprites is low we dont need to split our sorting
+            // Insertionsort: we assume that our list is almost sorted
+            for (var i = 1; i < renderItems.length; i++) {
+                var elem = renderItems[i];
+                var j = i;
+                while (j > 1 && renderItems[j - 1].y > elem.y) {
+                    renderItems[j] = renderItems[j - 1];
+                    j--;
+                }
+                renderItems[j] = elem;
+            }
+        } else {
+            var l = Math.min((renderItems.length - 1), (lastI + MAX_SORT_INDEX));
+            for (var i = lastI; i < l; i++) {
+                var elem = renderItems[i];
+                var j = i;
+                while (j > 1 && renderItems[j - 1].y > elem.y) {
+                    renderItems[j] = renderItems[j - 1];
+                    j--;
+                }
+                renderItems[j] = elem;
+            }
+            lastI += Math.floor(MAX_SORT_INDEX / 2);
+            if (lastI > renderItems.length) {
+                lastI = 1;
+            }
+        }
+    };
+
+    var Renderer = Smila.Renderer = {
+
+        /**
+         * gets called every time the renderer updates
+         * @param callback {function} with function(dt, elapsed) { ... }
+         */
+        onUpdate:function (callback) {
+            callback.$smilaId = onUpdateCallbackPointer++;
+            updateCallbacks[callback.$smilaId] = callback;
+        },
+
+        offUpdate:function (callback) {
+            if ('$smilaId' in callback) {
+                delete updateCallbacks[callback.$smilaId];
+            } else {
+                throw "[Smila::DataStore->offUpdate] cannot find the ID for the callback given at {onCallback}";
+            }
+        },
+
+        /**
+         * the function gets called every time the engine returns a new set of sprites that should be rendered
+         * onto the screen. The callback has one parameter which holds the array of sprites that will be rendered
+         * onto the screen. The return-value of the callback will be the sorted list
+         * @param callback {function} [Sprite]->[Sprite]  //sorted
+         */
+        onSortSprites:function (callback) {
+            sortFunction = callback;
+        },
+
+        reset:function () {
+            updateCallbacks = {};
+            renderItems = [];
+            map = null;
+            sortFunction = SORT_BY_Y_VALUE;
+            clearInterval(sortingThread);
+        },
+
+        isRunning:function () {
+            return rendererIsRunning;
+        },
+
+        setMap:function (m) {
+            map = m;
+            map.onReady(function(){
+                for(var i = 0; i < map.sprites.length; i++){
+                    renderItems.push(map.sprites[i]);
+                }
+            });
+            return this;
+        },
+
+        /**
+         * Add a dynamic sprite to the Renderer. Position changes
+         * will always be tracked though this is more performance-
+         * sensitive
+         * @param sprite
+         */
+        add:function (sprite) {
+            renderItems.push(sprite);
+        },
+
+        start:function () {
+            log("[Smila::Renderer->start]");
+            if (isStarted) {
+                throw "[Smila::Renderer->start] The Renderer is already started!";
+            } else {
+
+                if (window.CanvasRenderingContext2D) {
+                    renderItems = [];
+                    var parent = document.getElementById(ELEMENT_NAME);
+                    canvas = document.createElement('canvas');
+                    canvas.style.position = "absolute";
+                    canvas.height = parent.clientHeight;
+                    canvas.width = parent.clientWidth;
+                    dimension.h = canvas.height;
+                    dimension.w = canvas.width;
+                    parent.appendChild(canvas);
+
+                    canvas.onmousemove = function (evt) {
+                        var rect = canvas.getBoundingClientRect();
+                        mousePosition.x = evt.clientX - rect.left;
+                        mousePosition.y = evt.clientY - rect.top;
+                    };
+                    context = canvas.getContext('2d');
+                    if (verbose) {
+                        if (typeof Stats !== 'undefined') {
+                            stats = new Stats();
+                            document.body.appendChild(stats.domElement);
+                        }
+                    }
+                    thread = requestAnimationFrame(this.update);
+
+                    sortingThread = setInterval(YsortSprites, 500);
+
+                    camera = new Camera();
+
+                    log("[Smila::Renderer->start] = success");
+                } else {
+                    document.getElementById(ELEMENT_NAME).innerHTML = "[smila] is not supported!";
+                    log("[Smila::Renderer->start] = failed");
+                }
+
+                rendererIsRunning = true;
+                isStarted = true;
+            }
+        },
+
+        camera:function () {
+            return camera;
+        },
+
+        update:function () {
+            now = new Date().getTime();
+            elapsed = now - (Renderer.time || now);
+            Renderer.time = now;
+            dt = elapsed / EXPECTED_ELAPSED_MILLIS;
+            cameraRealX = camera.realPosition.x;
+            cameraRealY = camera.realPosition.y;
+            clearRect_w = dimension.w + 20;
+            clearRect_h = dimension.h + 20;
+            clearX = cameraRealX - 10;
+            clearY = cameraRealY - 10;
+            rightOuterBound = cameraRealX + dimension.w;
+            bottomBound = cameraRealY + dimension.h;
+
+            context.clearRect(clearX, clearY, clearRect_w, clearRect_h);
+
+            // -- sprite-sort!
+
+
+            camera.render();
+
+            for (var key in updateCallbacks) {
+                var callback = updateCallbacks[key];
+                callback.call(callback, elapsed, dt);
+            }
+
+            if (map !== null) {
+                map.renderBackground(context, cameraRealX, cameraRealY, clearRect_w, clearRect_h);
+            }
+
+            // Idee für die RenderItems:
+            // Sortiere die Items nach einem neuen Wert z=x+y
+            // Damit kann eine Sprite-Sortierung + Regionalisierung aufgebaut werden!
+            for (var i = 0; i < renderItems.length; i += 1) {
+                var drawable = renderItems[i];
+                if (drawable.update) {
+                    drawable.update(dt, elapsed);
+                }
+                if ((drawable.x + drawable.frameWidth | drawable.width) >= cameraRealX && drawable.x <= rightOuterBound) {
+                    if ((drawable.y + drawable.frameHeight | drawable.height) >= cameraRealY && drawable.y <= bottomBound) {
+                        drawable.render(context);
+                    }
+                }
+            }
+
+            // LAST
+            for (var i = 0; i < particleEmitters.length; i++) {
+                particleEmitters[i].update(context, dt, elapsed, cameraRealX, cameraRealY, rightOuterBound, bottomBound);
+            }
+
+            if (map !== null) {
+                map.renderTopLayer(context);
+            }
+
+            thread = requestAnimationFrame(Renderer.update);
+            if (stats !== null) stats.update();
+        },
+
+        /**
+         *
+         * @param e {
+         *      point : {x, y}
+         *      spread : double
+         *      emissionRate : Integer
+         *      lifetimeMs : Integer
+         *      color : String || [String]
+         *      direction : {x, y}
+         *
+         *      velocity : {x, y} { OPTIONAL }
+         *      totalLifetime : Integer { OPTIONAL }
+         * }
+         * @return {Smila.ParticleEmitter}
+         */
+        createParticleEmitter:function (e) {
+            var emitter = new ParticleEmitter(e);
+            particleEmitters.push(emitter);
+            return emitter;
+        }
+    };
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // P A R T I C L E  S Y S T E M
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    var PARTICLE_BYTE_SIZE = 28 | 0;
+    var DEFAULT_PARTICLE_COUNT = 100 | 0;
+
+    /**
+     *
+     * @type {Function}{
+     *
+     *
+     *
+     * }
+     */
+    var ParticleEmitter = Smila.ParticleEmitter = function (e) {
+        var particleCount = (typeof e === 'undefined') ? DEFAULT_PARTICLE_COUNT : e.particleCount || DEFAULT_PARTICLE_COUNT;
+        this.point = e.point || e.p;
+        this.velocity = e.velocity || e.v || {x:0, y:0};
+        this.direction = e.dir || e.direction;
+        this.spread = e.spread || e.s;
+        this.emissionRate = e.emissionRate || e.e;
+        this.lifetimeMs = e.lifetimeMs || e.ttl || 10000;
+        this.color = e.color || "#99CCFF";
+        this.totalLifetime = e.totalLifetime || e.tlt || null;
+        this.elapsed = 0;
+        this.colorPointer = 0;
+        this.angle = Math.atan2(this.direction.y, this.direction.x)
+        this.magnitude = Math.sqrt(this.direction.x * this.direction.x + this.direction.y * this.direction.y);
+        var data = new ArrayBuffer(particleCount * PARTICLE_BYTE_SIZE);
+        this.view = new Float32Array(data);
+        this.pointer = 0;
+        this.isActive = typeof e.active === 'undefined' ? true : e.active;
+        this.particleCount = 0;
+    };
+
+    ParticleEmitter.prototype.createParticle = function (point, velocity, ttl, acc) {
+        if (this.pointer >= this.view.length) {
+            this.pointer = 0; // circle...
+        }
+        this.view[this.pointer] = point.x;
+        this.view[this.pointer + 1] = point.y;
+        this.view[this.pointer + 2] = velocity.x;
+        this.view[this.pointer + 3] = velocity.y;
+        this.view[this.pointer + 4] = (typeof acc !== 'undefined') ? acc.x : 0;
+        this.view[this.pointer + 5] = (typeof acc !== 'undefined') ? acc.y : 0;
+        this.view[this.pointer + 6] = ttl;
+        var result = this.pointer;
+        this.particleCount += 1;
+        this.pointer += 7;
+        return result;
+    };
+
+    ParticleEmitter.prototype.update = function (ctx, dt, elapsedMillis, viewX, viewY, viewWidthX, viewHeightY) {
+        if (this.isActive) {
+            if (this.totalLifetime !== null) {
+                if (this.totalLifetime < 0) {
+                    this.isActive = false;
+                    return;
+                } else {
+                    this.totalLifetime -= elapsedMillis;
+                }
+            }
+            if (Array.isArray(this.color)) {
+                ctx.fillStyle = this.color[this.colorPointer];
+                if (this.colorPointer === this.color.length) {
+                    this.colorPointer = 0;
+                } else {
+                    this.colorPointer += 1;
+                }
+            } else {
+                ctx.fillStyle = this.color;
+            }
+            this.elapsed += elapsedMillis;
+            if (this.elapsed > 50) {
+                this.elapsed = 0;
+                var angle = 0;
+                for (var i = 0; i < this.emissionRate / 2; i++) {
+                    angle = this.angle + this.spread - (Math.random() * this.spread * 2);
+                    this.createParticle(this.point, {
+                            x:this.magnitude * Math.cos(angle),
+                            y:this.magnitude * Math.sin(angle)},
+                        this.lifetimeMs);
+                }
+            }
+
+            // render particles
+            var pos = 0;
+            var lastActive = 0;
+            var view = this.view;
+            for (var i = 0; i < this.particleCount; i++) {
+                pos = i * 7;
+                if (view[pos + 6] > 0) {
+                    lastActive = i;
+                    view[pos + 6] -= elapsedMillis;
+                    addVectors(view, pos, pos + 2); // add velocity to position
+                    addVectors(view, pos + 2, pos + 4); // add acceleration to velocity
+                    if (view[pos] >= viewX && view[pos] <= viewWidthX && view[pos + 1] >= viewY && view[pos + 1] <= viewHeightY) {
+                        ctx.fillRect(view[pos], view[pos + 1], 2, 2);
+                    }
+                }
+            }
+            this.particleCount = lastActive;
+
+            this.point.x += this.velocity.x;
+            this.point.y += this.velocity.y;
+        }
+    };
+
+    /**
+     * Adds the vector b on the vector a
+     * @param view {Int16Array}
+     * @param a {Integer} Position of the first Vectors x-position
+     * @param b {Integer} Position of the second Vector x-position
+     */
+    function addVectors(view, a, b) {
+        view[a] = view[a] + view[b];
+        view[a + 1] = view[a + 1] + view[b + 1];
+    };
+
+    /**
+     *
+     * @param view {Int16View}
+     * @param vector {Integer}
+     */
+    function getVectorMagnitude(view, vector) {
+        var x = view[vector];
+        var y = view[vector + 1]
+        return Math.sqrt(x * x + y * y);
+    };
+
+    /**
+     *
+     * @param view {Int16View}
+     * @param vector {Integer}
+     * @return {Number}
+     */
+    function getVectorAngle(view, vector) {
+        return Math.atan2(view[vector + 1], view[vector]);
+    };
+
+    function getVectorAngle2() {
+
+    }
+
+    function VectorfromAngle(view, angle, magnitude, destination) {
+        view[destination] = magnitude * Math.cos
+    };
+
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // P A R T I C L E  S Y S T E M  E N D
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // P R I V A T E   H E L P E R   F U N C T I O N S
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    //
+    // ++++++++++  B I T M A T R I X ++++++++++
+    //
+    var BitMatrix2D = function (width, height) {
+        var rest = width % 8;
+        if (rest !== 0) {
+            width = width + 8 - rest;
+        }
+        width = Math.ceil(width / 8);
+        var buffer = new ArrayBuffer(width * height);
+        this.data = new Uint8Array(buffer);
+        this.bytePerRow = width | 0;
+        this.width = width;
+        this.height = height;
+    };
+
+    BitMatrix2D.prototype.set = function (x, y) {
+        var bytePosition = this.bytePerRow * y;
+        var lineAdd = x / 8;
+        lineAdd = lineAdd | lineAdd; // fast floor to 32bit integer
+        var bit = x % 8;
+        var pos = bytePosition + lineAdd;
+        var n = this.data[pos];
+        var mask = 1 << bit;
+        n |= mask;
+        this.data[pos] = n;
+        return this;
+    };
+
+    BitMatrix2D.prototype.clear = function (x, y) {
+        var bytePosition = this.bytePerRow * y;
+        var lineAdd = x / 8;
+        lineAdd = lineAdd | lineAdd; // fast floor to 32bit integer
+        var bit = x % 8;
+        var pos = bytePosition + lineAdd;
+        var n = this.data[pos];
+        var mask = 1 << bit;
+        n &= ~mask;
+        this.data[pos] = n;
+        return this;
+    }
+
+    BitMatrix2D.prototype.test = function (x, y) {
+        var bytePos = this.bytePerRow * y;
+        var lineAdd = x / 8.0;
+        lineAdd = lineAdd | lineAdd;// fast floor (only 32bit integer!)
+        var bit = x % 8;
+        var pos = bytePos + lineAdd;
+        var n = this.data[pos];
+        var mask = 1 << bit;
+        return ((n & mask) != 0);
+    }
+    //
+    // ++++++++++  B I T M A T R I X  END ++++++++++
+    //
+
+
+    var loadMap = function (mapData, callback) {
+        log("[Smila::*->loadMap] ... start loading map ...");
+        var xobj = new XMLHttpRequest();
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4) {
+                callback(xobj.responseText);
+            }
+        };
+        xobj.open("GET", mapData.src, true);
+        xobj.send(null);
+
+    };
+
+    /**
+     * @param spriteData
+     *{
+     *      src : "/res/image.png",   {String}
+     *      base64 : "base64/png...",   {String}
+     *      w : width : 64   {Integer}
+     *      h : height : 64   {Integer}
+     *      o : outline : true  {Boolean} // optional
+     *      bm : bitmask : true  {Boolean} // optional
+     *      key : "character"  {String}
+     *      ocol : outlineColor : {r:125, g:0, b:0, a:255 }  {Object} // optional
+     * }
+     * @param callback {function}
+     * @param error {function}
+     */
+    var loadSprite = function (spriteData, callback, error) {
+        log("[Smila::*->loadSprite] {" + spriteData.key + "}");
+        spriteData.w = spriteData.w || spriteData.width;
+        spriteData.h = spriteData.h || spriteData.height;
+        spriteData.o = spriteData.o || spriteData.outline | false;
+        spriteData.bm = spriteData.bm || spriteData.bitmask | false;
+        if (typeof spriteData.outlineColor !== 'undefined' || typeof spriteData.ocol !== 'undefined') {
+            spriteData.ocol = spriteData.outlineColor || spriteData.ocol;
+        }
+
+        var img = new Image();
+        img.onload = function () {
+            log("[Smila::*->loadSprite] Image is loaded {" + spriteData.key + "}");
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var context = canvas.getContext('2d');
+            context.drawImage(img, 0, 0);
+
+            spriteCache[spriteData.key] = {meta:spriteData, canvas:canvas};
+            // ~~~ outline? ~~~
+            if (spriteData.o) {
+                var key = spriteData.key + "_outline";
+                if (!(key in spriteCache)) {
+                    var outlined = document.createElement('canvas');
+                    outlined.width = img.width;
+                    outlined.height = img.height;
+                    var outlinedContext = outlined.getContext('2d');
+                    outlinedContext.drawImage(canvas, 0, 0);
+                    var data = outlinedContext.getImageData(0, 0, img.width, img.height);
+                    var color = spriteData.ocol || defaultOutlineColor;
+                    data = outlineFunction(img.width, img.height, data, color);
+                    data = outlineFunction(img.width, img.height, data, color);// todo: fix this... (needed for 2px outline
+                    outlinedContext.putImageData(data, 0, 0);
+                    spriteCache[key] = {meta:spriteData, canvas:outlined};
+                }
+            }
+
+            if (spriteData.bm) {
+                var key = spriteData.key + "_bitmask";
+                if (!(key in spriteCache)) {
+                    var bitmask = new BitMatrix2D(img.width, img.height);
+                    var data = context.getImageData(0, 0, img.width, img.height);
+                    for (var x = 0; x < img.width; x++) {
+                        for (var y = 0; y < img.height; y++) {
+                            var pixel = getPixel(data, x, y);
+                            if (pixel.a !== 0) {
+                                bitmask.set(x, y);
+                            }
+                        }
+                    }
+                    spriteCache[key] = bitmask;
+                }
+            }
+
+            callback();
+        };
+
+        img.onerror = function () {
+            log("[Smila::*->loadSprite] Could not load Image {" + spriteData.key + "}");
+            error();
+        };
+
+        if (spriteData.key in spriteCache) {
+            log("[Smila::*->loadSprite] load from Cache: {" + spriteData.key + "}");
+            callback();
+        } else if (spriteData.base64 !== undefined) {
+            log("[Smila::*->loadSprite] load from base64: {" + spriteData.key + "}");
+            img.src = spriteData.base64;
+        } else {
+            log("[Smila::*->loadSprite] load from URL: {" + spriteData.key + "} {" + spriteData.src + "}");
+            img.src = imagePath + spriteData.src;
+        }
+
+    };
+
+    var setPixel = function (imageData, x, y, r, g, b, a) {
+        var index = (x + y * imageData.width) * 4;
+        imageData.data[index + 0] = r;
+        imageData.data[index + 1] = g;
+        imageData.data[index + 2] = b;
+        imageData.data[index + 3] = a;
+    };
+
+    var getPixel = function (imageData, x, y) {
+        var index = (x + y * imageData.width) * 4;
+        var r = imageData.data[index + 0];
+        var g = imageData.data[index + 1];
+        var b = imageData.data[index + 2];
+        var a = imageData.data[index + 3];
+        return {r:r, g:g, b:b, a:a};
+    };
+
+    /**
+     * Copied function from pxyu.
+     * todo: Fix this function in the future..
+     * @param w
+     * @param h
+     * @param data
+     * @param color
+     * @return {*}
+     */
+    var outlineFunction = function (w, h, data, color) {
+        var skipY = {};
+        for (var y = 1; y <= h; y++) {
+            for (var x = 1; x <= w; x++) {
+                var currentPixel = getPixel(data, x, y);
+                if (currentPixel.a === 0) { // is free
+                    // check if right and/or leftcheck possible
+                    var doLeftcheck = x != 1;
+                    var doRightcheck = x != w - 1;
+                    //var doTopCheck = y != 1;
+                    var doBottomCheck = y != h - 1;
+
+                    // first do up-down-check..
+                    /*if (doTopCheck ){
+                     var topPixel = drw.spriteStore.getPixel(data,x,y-1);
+                     if (topPixel.a !== 0){
+                     drw.spriteStore.setPixel(data,x,y, color.r, color.g, color.b, color.a);
+                     skipY[x] = skipY[x] | {};
+                     skipY[x][y] = true;
+                     }
+                     }*/
+                    if (doBottomCheck) {
+                        var bottomPixel = getPixel(data, x, y + 1);
+                        if (bottomPixel.a !== 0) {
+                            setPixel(data, x, y, color.r, color.g, color.b, color.a);
+                            continue;
+                        }
+                    }
+
+                    // then left-right.. (so the up-down gets not confused with the left-right)
+                    if (doLeftcheck) {
+                        var leftPixel = getPixel(data, x - 1, y);
+                        if (leftPixel.a !== 0) {
+                            setPixel(data, x, y, color.r, color.g, color.b, color.a);
+                            x += 1;
+                            continue;
+                        }
+                    }
+                    if (doRightcheck) {
+                        var rightPixel = getPixel(data, x + 1, y);
+                        if (rightPixel.a !== 0) {
+                            setPixel(data, x, y, color.r, color.g, color.b, color.a);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+        return data;
+    };
+
+    /**
+     * Gets the absolute mouse position..
+     * @return {Object} { x: ..., y: ... }
+     */
+    var getAbsoluteMousePosition = function () {
+        if (camera !== null) {
+            return {
+                x:(camera.realPosition.x + mousePosition.x),
+                y:(camera.realPosition.y + mousePosition.y)
+            };
+        } else {
+            return mousePosition;
+        }
+    };
+
+    var loadDataStoreFromLocalStorage = function () {
+
+    };
+
+    var polyFill = function () {
+        var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+        window.requestAnimationFrame = requestAnimationFrame;
+    };
+
+    var log = function (message) {
+        console.log(message);
+    };
+
+
+    loadDataStoreFromLocalStorage();
+    polyFill();
+
+    return Smila;
+}();
