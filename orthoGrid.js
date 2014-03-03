@@ -184,8 +184,8 @@
                 x += 1;
                 break;
             case Directions.ne:
-                x -= 1;
-                y += 1;
+                x += 1;
+                y -= 1;
                 break;
             case Directions.nw:
                 x -= 1;
@@ -196,8 +196,8 @@
                 y += 1;
                 break;
             case Directions.sw:
-                x += 1;
-                y -= 1;
+                x -= 1;
+                y += 1;
                 break;
         }
         x = Math.max(0, Math.min(x, this.grid.w - 1));
@@ -238,9 +238,11 @@
                 var Y = y + this.h;
                 var X = x + this.w;
                 var canmove = true;
+                var ly = 0;
+                var rx = 0;
                 switch (dir) {
                     case Directions.n:
-                        var ly = y + this.h;
+                        ly = y + this.h;
                         for(var nx = x;nx < X; nx++){
                             if(!this.validatePosition(nx,y)){
                                 canmove = false;
@@ -257,7 +259,7 @@
                         }
                         break;
                     case Directions.s:
-                        var ly = this.y + this.h;
+                        ly = this.y + this.h;
                         for(var nx = x;nx < X; nx++){
                             if(!this.validatePosition(nx,ly)){
                                 canmove = false;
@@ -280,7 +282,7 @@
                                 break;
                             }
                             if(canmove){
-                                var rx = x + this.w;
+                                rx = x + this.w;
                                 for(var ny = y; ny < Y; ny++){
                                     setValueToMatrix(userData,x,ny,w,this.id);
                                     setValueToMatrix(userData,rx,ny,w,0);
@@ -291,7 +293,7 @@
                         }
                         break;
                     case Directions.e:
-                        var rx = this.x + this.w;
+                        rx = this.x + this.w;
                         for(var ny = y; ny < Y; ny++){
                             if(!this.validatePosition(rx,ny)){
                                 canmove = false;
@@ -315,7 +317,7 @@
                             }
                         }
                         if(canmove){
-                            var rx = this.x + this.w;
+                            rx = this.x + this.w;
                             for (var ny = y+ 1; ny < Y; ny++){
                                 if(!this.validatePosition(rx,ny)){
                                     canmove = false;
@@ -323,14 +325,15 @@
                                 }
                             }
                             if(canmove){
-                                for(var nx = x; nx < X; nx++){
-                                    setValueToMatrix(userData,nx,y,w,this.id);
-                                    setValueToMatrix(userData,nx+1,this.y,w,0);
+                                ly = this.y + 1;
+                                for(var nx = x; nx < X; nx++){                              // 1|1  [1|1,2|1;1|2,2|2] ==>
+                                    setValueToMatrix(userData,nx,y,w,this.id);              // 2|0  [2|0,3|0;2|1,3|1]
+                                    setValueToMatrix(userData,nx-1,ly,w,0);
                                     handleEvent(data,nx,y,w,trapLookup,this);
                                 }
                                 for (var ny = y + 1; ny < Y; ny++){
                                     setValueToMatrix(userData,rx,ny,w,this.id);
-                                    setValueToMatrix(userData,this.x,ny+1,w,0);
+                                    setValueToMatrix(userData,this.x,ny,w,0);
                                     handleEvent(data,rx,ny,w,trapLookup,this);
                                 }
                                 this.x = x;
