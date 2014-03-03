@@ -107,6 +107,16 @@
     };
 
     /**
+     *
+     * @param x
+     * @param y
+     */
+    Grid.prototype.block = function(x,y){
+        setValueToMatrix(this.data,x,y,this.w,1);
+        return this;
+    };
+
+    /**
      * Delivers the GridEntities in a certain area
      * @param x {Integer} upper left point
      * @param y {Integer} upper left point
