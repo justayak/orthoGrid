@@ -139,9 +139,9 @@
         return false;
     };
 
-    GridEntity.prototype.validatePosition = function(x,y){
-        if (getValueFromMatrix(this.grid.userData,x,y, this.grid.w) !== 0) return false;
-        return this.validateEventId(getValueFromMatrix(this.grid.data,x,y,this.grid.w));
+    GridEntity.prototype.validatePosition = function (x, y) {
+        if (getValueFromMatrix(this.grid.userData, x, y, this.grid.w) !== 0) return false;
+        return this.validateEventId(getValueFromMatrix(this.grid.data, x, y, this.grid.w));
     };
 
     var Directions = OG.Directions = {
@@ -235,6 +235,8 @@
                 }
             } else {
                 // BIG ELEMENT | AWFUL CODE!!!
+                var nx = 0;
+                var ny = 0;
                 var Y = y + this.h;
                 var X = x + this.w;
                 var canmove = true;
@@ -243,50 +245,50 @@
                 switch (dir) {
                     case Directions.n:
                         ly = y + this.h;
-                        for(var nx = x;nx < X; nx++){
-                            if(!this.validatePosition(nx,y)){
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, y)) {
                                 canmove = false;
                                 break;
                             }
                         }
-                        if (canmove){
-                            for(var nx = x;nx < X; nx++){
-                                setValueToMatrix(userData,nx,y,w,this.id);
-                                setValueToMatrix(userData,nx,ly,w,0);
-                                handleEvent(data,nx,y,w,trapLookup,this);
+                        if (canmove) {
+                            for (nx = x; nx < X; nx++) {
+                                setValueToMatrix(userData, nx, y, w, this.id);
+                                setValueToMatrix(userData, nx, ly, w, 0);
+                                handleEvent(data, nx, y, w, trapLookup, this);
                             }
                             this.y = y;
                         }
                         break;
                     case Directions.s:
                         ly = this.y + this.h;
-                        for(var nx = x;nx < X; nx++){
-                            if(!this.validatePosition(nx,ly)){
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, ly)) {
                                 canmove = false;
                                 break;
                             }
                         }
-                        if (canmove){
-                            for(var nx = x;nx < X; nx++){
-                                setValueToMatrix(userData,nx,ly,w,this.id);
-                                setValueToMatrix(userData,nx,this.y,w,0);
-                                handleEvent(data,nx,ly,w,trapLookup,this);
+                        if (canmove) {
+                            for (nx = x; nx < X; nx++) {
+                                setValueToMatrix(userData, nx, ly, w, this.id);
+                                setValueToMatrix(userData, nx, this.y, w, 0);
+                                handleEvent(data, nx, ly, w, trapLookup, this);
                             }
                             this.y = y;
                         }
                         break;
                     case Directions.w:
-                        for (var ny = y; ny < Y; ny++){
-                            if(!this.validatePosition(x,ny)){
+                        for (ny = y; ny < Y; ny++) {
+                            if (!this.validatePosition(x, ny)) {
                                 canmove = false;
                                 break;
                             }
-                            if(canmove){
+                            if (canmove) {
                                 rx = x + this.w;
-                                for(var ny = y; ny < Y; ny++){
-                                    setValueToMatrix(userData,x,ny,w,this.id);
-                                    setValueToMatrix(userData,rx,ny,w,0);
-                                    handleEvent(data,x,ny,w,trapLookup,this);
+                                for (ny = y; ny < Y; ny++) {
+                                    setValueToMatrix(userData, x, ny, w, this.id);
+                                    setValueToMatrix(userData, rx, ny, w, 0);
+                                    handleEvent(data, x, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                             }
@@ -294,47 +296,46 @@
                         break;
                     case Directions.e:
                         rx = this.x + this.w;
-                        for(var ny = y; ny < Y; ny++){
-                            if(!this.validatePosition(rx,ny)){
+                        for (ny = y; ny < Y; ny++) {
+                            if (!this.validatePosition(rx, ny)) {
                                 canmove = false;
                                 break;
                             }
                         }
-                        if(canmove){
-                            for(var ny = y; ny < Y; ny++){
-                                setValueToMatrix(userData,rx,ny,w,this.id);
-                                setValueToMatrix(userData,this.x,ny,w,0);
-                                handleEvent(data,rx,ny,w,trapLookup,this);
+                        if (canmove) {
+                            for (ny = y; ny < Y; ny++) {
+                                setValueToMatrix(userData, rx, ny, w, this.id);
+                                setValueToMatrix(userData, this.x, ny, w, 0);
+                                handleEvent(data, rx, ny, w, trapLookup, this);
                             }
                             this.x = x;
                         }
                         break;
                     case Directions.ne:
-                        for(var nx = x; nx < X; nx++ ){
-                            if(!this.validatePosition(nx,y)){
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, y)) {
                                 canmove = false;
                                 break;
                             }
                         }
-                        if(canmove){
+                        if (canmove) {
                             rx = this.x + this.w;
-                            for (var ny = y+ 1; ny < Y; ny++){
-                                if(!this.validatePosition(rx,ny)){
+                            for (ny = y + 1; ny < Y; ny++) {
+                                if (!this.validatePosition(rx, ny)) {
                                     canmove = false;
                                     break;
                                 }
                             }
-                            if(canmove){
-                                ly = this.y + 1;
-                                for(var nx = x; nx < X; nx++){                              // 1|1  [1|1,2|1;1|2,2|2] ==>
-                                    setValueToMatrix(userData,nx,y,w,this.id);              // 2|0  [2|0,3|0;2|1,3|1]
-                                    setValueToMatrix(userData,nx-1,ly,w,0);
-                                    handleEvent(data,nx,y,w,trapLookup,this);
+                            if (canmove) {
+                                for (nx = x; nx < X; nx++) {
+                                    setValueToMatrix(userData, nx, y, w, this.id);
+                                    setValueToMatrix(userData, nx - 1, Y, w, 0);
+                                    handleEvent(data, nx, y, w, trapLookup, this);
                                 }
-                                for (var ny = y + 1; ny < Y; ny++){
-                                    setValueToMatrix(userData,rx,ny,w,this.id);
-                                    setValueToMatrix(userData,this.x,ny,w,0);
-                                    handleEvent(data,rx,ny,w,trapLookup,this);
+                                for (ny = y + 1; ny < Y; ny++) {
+                                    setValueToMatrix(userData, rx, ny, w, this.id);
+                                    setValueToMatrix(userData, this.x, ny, w, 0);
+                                    handleEvent(data, rx, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                                 this.y = y;
@@ -342,32 +343,31 @@
                         }
                         break;
                     case Directions.nw:
-
-                        for(var nx = x; nx < X; nx++){
-                            if(!this.validatePosition(nx,y)){
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, y)) {
                                 canmove = false;
                                 break;
                             }
                         }
-                        if(canmove){
-                            for(var ny = y+ 1; ny < Y; ny++){
-                                if(!this.validatePosition(x,ny)){
+                        if (canmove) {
+                            for (ny = y + 1; ny < Y; ny++) {
+                                if (!this.validatePosition(x, ny)) {
                                     canmove = false;
                                     break;
                                 }
                             }
-                            if (canmove){
+                            if (canmove) {
                                 var ly = y + this.h;
                                 var rx = x + this.w;
-                                for(var nx = x; nx < X; nx++){
-                                    setValueToMatrix(userData,nx,y,w,this.id);
-                                    setValueToMatrix(userData,nx-1,ly,w,0);
-                                    handleEvent(data,nx,y,w,trapLookup,this);
+                                for (nx = x; nx < X; nx++) {
+                                    setValueToMatrix(userData, nx, y, w, this.id);
+                                    setValueToMatrix(userData, nx + 1, ly, w, 0);
+                                    handleEvent(data, nx, y, w, trapLookup, this);
                                 }
-                                for(var ny = y+1; ny < Y; ny++){
-                                    setValueToMatrix(userData,x,ny,w,this.id);
-                                    setValueToMatrix(userData,rx,ny+1,w,0);
-                                    handleEvent(data,x,ny,w,trapLookup,this);
+                                for (ny = y + 1; ny < Y; ny++) {
+                                    setValueToMatrix(userData, x, ny, w, this.id);
+                                    setValueToMatrix(userData, rx, ny, w, 0);
+                                    handleEvent(data, x, ny, w, trapLookup, this);
                                 }
                                 this.x = x;
                                 this.y = y;
@@ -375,10 +375,63 @@
                         }
                         break;
                     case Directions.se:
-
+                        ly = Y - 1;
+                        rx = this.x + this.w;
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, ly)) {
+                                canmove = false;
+                                break;
+                            }
+                        }
+                        if (canmove) {
+                            for (ny = y + 1; ny < Y; ny++) {
+                                if (!this.validatePosition(rx, ny - 1)) {
+                                    canmove = false;
+                                    break;
+                                }
+                            }
+                            if (canmove) {
+                                for (nx = x; nx < X; nx++) {
+                                    setValueToMatrix(userData, nx, ly, w, this.id);
+                                    setValueToMatrix(userData, nx - 1, this.y, w, 0);
+                                }
+                                for (ny = y + 1; ny < Y; ny++) {
+                                    setValueToMatrix(userData, rx, ny - 1, w, this.id);
+                                    setValueToMatrix(userData, this.x, ny - 1, w, 0);
+                                }
+                            }
+                            this.x = x;
+                            this.y = y;
+                        }
                         break;
                     case Directions.sw:
-
+                        ly = Y - 1;
+                        for (nx = x; nx < X; nx++) {
+                            if (!this.validatePosition(nx, ly)) {
+                                canmove = false;
+                                break;
+                            }
+                        }
+                        if (canmove) {
+                            for (ny = y + 1; ny < Y; ny++) {
+                                if(!this.validatePosition(x,ny-1)){
+                                    canmove = false;
+                                    break;
+                                }
+                            }
+                            if (canmove){
+                                for(nx = x; nx < X; nx++){
+                                    setValueToMatrix(userData,nx,ly,w,this.id);
+                                    setValueToMatrix(userData,nx+1,this.y,w,0);
+                                }
+                                for(ny = y+1;ny < Y;ny++){
+                                    setValueToMatrix(userData,x,ny-1,w,this.id);
+                                    setValueToMatrix(userData,X,ny-1,w,0);
+                                }
+                                this.x = x;
+                                this.y = y;
+                            }
+                        }
                         break;
                 }
 
@@ -388,12 +441,12 @@
         return this;
     };
 
-    function handleEvent(array,x,y,w,trapLookup,entity){
-        var event = getValueFromMatrix(array,x,y,w);
-        if (event !== 0){
+    function handleEvent(array, x, y, w, trapLookup, entity) {
+        var event = getValueFromMatrix(array, x, y, w);
+        if (event !== 0) {
             var data = {};
             var key = x + "_" + y;
-            if (key in trapLookup){
+            if (key in trapLookup) {
                 data = trapLookup[key];
             }
             for (var i = 0; i < entity.eventListener.length; i++) {
