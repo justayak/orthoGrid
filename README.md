@@ -1,4 +1,4 @@
-2d-Grid-System
+2D-Grid-System
 
 Simple grid based collision system for browser and nodejs
 
