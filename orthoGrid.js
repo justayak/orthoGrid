@@ -5,6 +5,12 @@
     var OG = function () {
     };
 
+    OG.VERBOSE = false;
+
+    var log = function(str){
+        if(OG.VERBOSE) console.log(str);
+    };
+
     var INT_BYTE_SIZE = 2;
 
     var entityNumber = 1;
@@ -52,26 +58,28 @@
 
     /**
      *
-     * @param map
-     * @return {*}
+     * @param map {Smila.Map}
+     * @param callback {function}
      */
-    Grid.createFromSmilaMap = function(map){
-        var result = new Grid(map.w,map.h);
-        if (typeof map.eventLayer !== 'undefined'){
-            for(var x = 0; x < map.w; x++){
-                for(var y = 0; y < map.h; y++){
-                    var event = map.eventLayer[x][y];
-                    if (event !== 0){
-                        if (event.id !== 1){
-                            result.trapLookup[x+"_"+y] = event;
+    Grid.createFromSmilaMap = function(map,callback){
+        log("[OG::Grid->createFromSmilaMap] beginning.. " );
+        map.onReady(function(){
+            var result = new Grid(map.w,map.h);
+            if (typeof map.eventLayer !== 'undefined'){
+                for(var x = 0; x < map.w; x++){
+                    for(var y = 0; y < map.h; y++){
+                        var event = map.eventLayer[x][y];
+                        if (event !== 0){
+                            if (event.id !== 1){
+                                result.trapLookup[x+"_"+y] = event;
+                            }
+                            setValueToMatrix(result.data,x,y,map.w,event.id);
                         }
-                        setValueToMatrix(result.data,x,y,map.w,event.id);
                     }
                 }
             }
-        }
-        return result;
-
+            callback(result);
+        });
     };
 
     /**
@@ -98,8 +106,47 @@
         return this.entities[i];
     };
 
-    Grid.prototype.print = function () {
-        var str = "";
+    /**
+     * Delivers the GridEntities in a certain area
+     * @param x {Integer} upper left point
+     * @param y {Integer} upper left point
+     * @param w {Integer} width
+     * @param h {Integer} height
+     * @return {Array} of Grid-Entities inside the square
+     */
+    Grid.prototype.query = function(x,y,w,h){
+        var alreadyFoundLookup = {};
+        var w = this.w;
+        var data = this.data;
+        var result = [];
+        var X = x + w;
+        var y = y + h;
+        for(;x < X; x++){
+            for(;y<Y;y++){
+                var entity = getValueFromMatrix(data,x,y,w);
+                if (entity !== 0){
+
+                }
+            }
+        }
+        return result;
+    };
+
+    /**
+     * Delivers the GridEntities in a certain area
+     * @param x {Integer} center point
+     * @param y {Integer} center point
+     * @param r {Integer} radius
+     * @return {Array} of Grid-Entities inside the square
+     */
+    Grid.prototype.queryCircle = function(x,y,r){
+        var result = [];
+
+        return result;
+    }
+
+    Grid.prototype.print = function (toConsole) {
+        var str = "\nEntities:\n";
         for (var y = 0; y < this.h; y++) {
             for (var x = 0; x < this.w; x++) {
                 var v = getValueFromMatrix(this.userData, x, y, this.w);
@@ -109,7 +156,20 @@
             }
             str += "\n";
         }
-        console.log(str);
+
+        str += "\n\nTraps:\n"
+        for (var y = 0; y < this.h; y++) {
+            for (var x = 0; x < this.w; x++) {
+                var v = getValueFromMatrix(this.data, x, y, this.w);
+                if (v === 0) str += "_"
+                else str += v;
+                str += "|";
+            }
+            str += "\n";
+        }
+
+        if (toConsole == true) console.log(str);
+        return str;
     };
 
     /**
@@ -149,6 +209,23 @@
                 }
             }
         }
+
+        // set events
+        var X = this.x + this.w;
+        var Y = this.y + this.h;
+        for(var x = this.x; x < X; x++){
+            for(var y = this.y; y < Y; y++){
+                var event = getValueFromMatrix(grid.data,x,y,w);
+                if (event !== 0){
+                    var elem = {};
+                    var key = x + "_" + y;
+                    if(key in grid.trapLookup){
+                        elem = grid.trapLookup[key];
+                    }
+                    this.traps.push(elem);
+                }
+            }
+        }
     };
 
     /**
@@ -157,7 +234,7 @@
     GridEntity.prototype.validateEventId = function (id) {
         if (id === 0) return true;
         if (id === 1) return false;
-        if (this.enterableEventIds.length === 0) return false;
+        if (this.enterableEventIds.length === 0) return true;
         for (var i = 0; i < this.enterableEventIds.length; i++) {
             if (this.enterableEventIds[i] === id) return true;
         }
@@ -228,6 +305,8 @@
         }
         x = Math.max(0, Math.min(x, this.grid.w - 1));
         y = Math.max(0, Math.min(y, this.grid.h - 1));
+        var Y = y + this.h;
+        var X = x + this.w;
 
         var userData = this.grid.userData;
         var data = this.grid.data;
@@ -263,8 +342,6 @@
                 // BIG ELEMENT | AWFUL CODE!!!
                 var nx = 0;
                 var ny = 0;
-                var Y = y + this.h;
-                var X = x + this.w;
                 var canmove = true;
                 var ly = 0;
                 var rx = 0;
@@ -464,8 +541,7 @@
                     if(key in trapLookup){
                         elem = trapLookup[key];
                     }
-                    elem.eventId = event;
-                    this.traps.push(data);
+                    this.traps.push(elem);
                 }
             }
         }

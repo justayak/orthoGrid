@@ -17,6 +17,8 @@
 
     window.onload = function(){
 
+        OG.VERBOSE = true;
+
         Smila.Settings({
             verbose:true
         });
@@ -35,7 +37,39 @@
             renderer.setMap(map);
 
 
-            var grid = OG.Grid.createFromSmilaMap(map);
+            OG.Grid.createFromSmilaMap(map,function(grid){
+
+                var a = grid.spawnEntity({
+                    w : 2,
+                    h : 2,
+                    x : 5,
+                    y : 5
+                });
+
+                var b = grid.spawnEntity({
+                   x:5,
+                    y:8
+                });
+
+                a.move(OG.Directions.n);
+
+                //b.move(OG.Directions.n).move(OG.Directions.s);
+
+                grid.print(true);
+
+                for(var i = 0; i < a.traps.length;i++){
+                    console.log(a.traps[i]);
+                }
+
+                for(var i = 0; i < b.traps.length;i++){
+                    console.log(b.traps[i]);
+                }
+
+
+            });
+
+
+
 
         });
 
