@@ -42,6 +42,10 @@ grid.event(9,10,5);
 // returns an array!
 var allEventsOfType_3 = grid.findAllTrapsById(3);
 
+// adds a trap to the lookup-system. To trigger, a corresponding trap must be placed with "grid.event"
+// ads the event to position {x:5,y:3}
+grid.putToTrapLookup(5,3, {type:"enemy", attacks:[0,5,2]});
+
 ```
 
 If you use the Smila-Graphics-library, you can use the build-in Map of the library to create a Grid out of that:
