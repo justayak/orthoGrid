@@ -24,7 +24,8 @@ a.move(OG.Directions.n); // move north
 
 
 // block a square that will not be enterable by an entity anymore
-grid.block(8,8);
+// block position {x:8,y:9}
+grid.block(8,9);
 
 // gets a entity at the given position. If there is no entity, null is returned
 var entity = grid.getEntityAt(1,0);
@@ -32,6 +33,10 @@ var entity = grid.getEntityAt(1,0);
 // get all Entities in the given area
 // x, y, width, height
 var list = grid.query(2,3,5,5);
+
+// set an event to a certain position
+// set the Event "5" to position {x:9, y:10}
+grid.event(9,10,5);
 
 // find all positions of a certain event-id:
 // returns an array!

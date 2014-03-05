@@ -135,6 +135,11 @@
         return this;
     };
 
+    Grid.prototype.event = function(x,y,eventID){
+        setValueToMatrix(this.data,x,y,this.w,eventID);
+        return this;
+    };
+
     /**
      * Delivers the GridEntities in a certain area
      * @param x {Integer} upper left point
