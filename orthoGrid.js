@@ -82,6 +82,10 @@
         });
     };
 
+    Grid.prototype.putToTrapLookup = function(x,y,data){
+        this.trapLookup[x + "_" + y] = data;
+    };
+
     /**
      *
      * @param entityOptions {Option}
