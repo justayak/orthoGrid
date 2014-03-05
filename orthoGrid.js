@@ -106,6 +106,25 @@
         return this.entities[i];
     };
 
+    Grid.prototype.findAllTrapsById = function(trapID){
+        var result = [];
+        for(var i = 0; i < this.data.length; i++){
+            if(this.data[i] === trapID){
+                var x = i % this.w;
+                var y = Math.floor(i/this.w);
+                var key = x + "_" + y;
+                var data = {};
+                if(key in this.trapLookup){
+                    data = this.trapLookup[key];
+                }
+                data.$x = x;
+                data.$y = y;
+                result.push(data);
+            }
+        }
+        return result;
+    };
+
     /**
      *
      * @param x

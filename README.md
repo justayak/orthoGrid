@@ -32,6 +32,11 @@ var entity = grid.getEntityAt(1,0);
 // get all Entities in the given area
 // x, y, width, height
 var list = grid.query(2,3,5,5);
+
+// find all positions of a certain event-id:
+// returns an array!
+var allEventsOfType_3 = grid.findAllTrapsById(3);
+
 ```
 
 If you use the Smila-Graphics-library, you can use the build-in Map of the library to create a Grid out of that:
