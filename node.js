@@ -22,4 +22,4 @@ var dir = OG.Directions;
 
 a.move(dir.se).move(dir.nw).move(dir.sw).move(dir.ne);
 
-Grid.print();
+Grid.print(true);
