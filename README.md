@@ -63,6 +63,11 @@ If you use the Smila-Graphics-library, you can use the build-in Map of the libra
 
  The Directions are Integers:
 
- 11....1....21</br>\nr
- 10....x....20</br>\nr
- 12....2....22</br>\nr
+* n:...1
+* s:...2
+* w:..10
+* e:..20
+* ne:.21
+* nw:.11
+* se:.22
+* sw:.12
