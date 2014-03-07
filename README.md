@@ -1,4 +1,4 @@
-2D-Grid-System
+#2D-Grid-System
 
 Simple grid based collision system for browser and nodejs
 
@@ -63,6 +63,6 @@ If you use the Smila-Graphics-library, you can use the build-in Map of the libra
 
  The Directions are Integers:
 
- | 11  |   1    |   21  |
- | 10  |   x    |   20  |
- | 12  |   2    |   22  |
+ 11....1....21</br>
+ 10....x....20</br>
+ 12....2....22</br>
