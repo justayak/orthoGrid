@@ -60,3 +60,11 @@ If you use the Smila-Graphics-library, you can use the build-in Map of the libra
 
  });
  ```
+
+ The Directions are Integers:
+
+ |WEST | CENTER | SOUTH |
+ |:---:|:------:|:-----:|
+ | 11  |   1    |   21  |
+ | 10  |   x    |   20  |
+ | 12  |   2    |   22  |

@@ -288,14 +288,14 @@
     };
 
     var Directions = OG.Directions = {
-        n:0,
-        s:1,
-        w:2,
-        e:3,
-        ne:4,
-        nw:5,
-        se:6,
-        sw:7
+        n:1,
+        s:2,
+        w:10,
+        e:20,
+        ne:21,
+        nw:11,
+        se:22,
+        sw:12
     };
 
     /**
